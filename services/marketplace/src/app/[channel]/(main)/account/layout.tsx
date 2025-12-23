@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 const accountNav = [
   { href: "/account", label: "Profile", icon: User },
-  { href: "/account/instances", label: "My Agents", icon: Bot },
+  { href: "/account/instances", label: "My Instances", icon: Bot },
   { href: "/account/billing", label: "Billing & Credits", icon: Wallet },
   { href: "/account/settings", label: "Settings", icon: Settings },
 ];

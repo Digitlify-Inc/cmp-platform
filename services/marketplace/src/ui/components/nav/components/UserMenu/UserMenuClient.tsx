@@ -14,7 +14,7 @@ type Props = {
 
 const menuLinks = [
 	{ href: "/account", label: "My Account", icon: LayoutGrid },
-	{ href: "/account/subscriptions", label: "My Agents", icon: Bot },
+	{ href: "/account/instances", label: "My Instances", icon: Bot },
 	{ href: "/account/billing", label: "Billing & Credits", icon: CreditCard },
 	{ href: "/account/settings", label: "Settings", icon: Settings },
 ];
