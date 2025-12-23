@@ -1,0 +1,306 @@
+version: 1
+registry:
+  name: "GSV Capability Registry"
+  updated_at: "2025-12-17"
+  owners:
+    - "platform-team@gsv"
+capabilities:
+  - id: prompt_orchestrator
+    v: 1
+    layer: intelligence
+    title: "Prompt Orchestrator"
+    description: "Base prompt + variables + system instructions; supports template prompts and guardrails hooks."
+    saleor_value: "prompt_orchestrator"
+    config_schema:
+      type: object
+      properties:
+        system_prompt: { type: string, maxLength: 12000 }
+        temperature: { type: number, minimum: 0, maximum: 2, default: 0.3 }
+        max_output_tokens: { type: integer, minimum: 64, maximum: 8192, default: 512 }
+      required: [system_prompt]
+    provisioning:
+      handler: "cap.prompt_orchestrator.v1"
+      resources: []
+    metering:
+      dimensions:
+        - { id: llm_tokens_in, unit: tokens }
+        - { id: llm_tokens_out, unit: tokens }
+
+  - id: tool_connectors
+    v: 1
+    layer: integrations
+    title: "Tool Connectors"
+    description: "Enables tool calling via Connector Gateway with policy, scopes, and audit logs."
+    saleor_value: "tool_connectors"
+    config_schema:
+      type: object
+      properties:
+        allowed_tools:
+          type: array
+          items: { type: string }
+        tool_rate_limit_per_min:
+          type: integer
+          minimum: 10
+          maximum: 5000
+          default: 60
+      required: [allowed_tools]
+    provisioning:
+      handler: "cap.tool_connectors.v1"
+      resources: ["connector_gateway_policy"]
+    metering:
+      dimensions:
+        - { id: tool_calls, unit: calls }
+
+  - id: mcp_tools
+    v: 1
+    layer: integrations
+    title: "MCP Tools"
+    description: "Allows MCP servers through a proxy with allowlists and auditing."
+    saleor_value: "mcp_tools"
+    config_schema:
+      type: object
+      properties:
+        allowed_mcp_servers:
+          type: array
+          items: { type: string }
+        mcp_timeout_ms: { type: integer, minimum: 1000, maximum: 120000, default: 20000 }
+      required: [allowed_mcp_servers]
+    provisioning:
+      handler: "cap.mcp_tools.v1"
+      resources: ["mcp_proxy_policy"]
+    metering:
+      dimensions:
+        - { id: mcp_calls, unit: calls }
+
+  - id: api_endpoint
+    v: 1
+    layer: experience
+    title: "API Endpoint"
+    description: "Exposes a secured API endpoint for invoking the instance via gateway routing."
+    saleor_value: "api_endpoint"
+    config_schema:
+      type: object
+      properties:
+        endpoint_slug: { type: string, pattern: "^[a-z0-9-]{3,40}$" }
+        auth_mode: { type: string, enum: ["api_key", "oidc"], default: "api_key" }
+      required: [endpoint_slug]
+    provisioning:
+      handler: "cap.api_endpoint.v1"
+      resources: ["gateway_route"]
+    metering:
+      dimensions:
+        - { id: requests, unit: calls }
+
+  - id: chat_ui
+    v: 1
+    layer: experience
+    title: "Chat UI"
+    description: "Provides assistant chat surface with session history."
+    saleor_value: "chat_ui"
+    config_schema:
+      type: object
+      properties:
+        welcome_message: { type: string, maxLength: 400, default: "Hi! How can I help?" }
+        session_timeout_min: { type: integer, minimum: 5, maximum: 1440, default: 60 }
+    provisioning:
+      handler: "cap.chat_ui.v1"
+      resources: ["ui_config"]
+    metering:
+      dimensions:
+        - { id: chat_sessions, unit: sessions }
+
+  - id: web_widget
+    v: 1
+    layer: experience
+    title: "Web Widget"
+    description: "Embeddable website widget + domain allowlist."
+    saleor_value: "web_widget"
+    config_schema:
+      type: object
+      properties:
+        allowed_domains:
+          type: array
+          items: { type: string }
+        widget_theme: { type: string, enum: ["light", "dark"], default: "light" }
+      required: [allowed_domains]
+    provisioning:
+      handler: "cap.web_widget.v1"
+      resources: ["widget_bundle", "gateway_route"]
+    metering:
+      dimensions:
+        - { id: widget_sessions, unit: sessions }
+
+  - id: multilingual
+    v: 1
+    layer: modalities_i18n
+    title: "Multilingual"
+    description: "Language selection, fallback strategy, and translation options."
+    saleor_value: "multilingual"
+    config_schema:
+      type: object
+      properties:
+        default_language: { type: string, default: "en" }
+        allowed_languages:
+          type: array
+          items: { type: string }
+        fallback_language: { type: string, default: "en" }
+      required: [allowed_languages]
+    provisioning:
+      handler: "cap.multilingual.v1"
+      resources: []
+    metering:
+      dimensions:
+        - { id: translations, unit: calls }
+
+  - id: multimodal_vision
+    v: 1
+    layer: modalities_i18n
+    title: "Multimodal Vision"
+    description: "Enables image/PDF visual understanding."
+    saleor_value: "multimodal_vision"
+    config_schema:
+      type: object
+      properties:
+        max_images_per_request: { type: integer, minimum: 1, maximum: 10, default: 3 }
+    provisioning:
+      handler: "cap.multimodal_vision.v1"
+      resources: ["model_policy_vision"]
+    metering:
+      dimensions:
+        - { id: image_calls, unit: calls }
+
+  - id: multimodal_audio
+    v: 1
+    layer: modalities_i18n
+    title: "Multimodal Audio"
+    description: "Enables STT/TTS audio minutes."
+    saleor_value: "multimodal_audio"
+    config_schema:
+      type: object
+      properties:
+        stt_enabled: { type: boolean, default: true }
+        tts_enabled: { type: boolean, default: true }
+    provisioning:
+      handler: "cap.multimodal_audio.v1"
+      resources: ["stt_policy", "tts_policy"]
+    metering:
+      dimensions:
+        - { id: audio_minutes, unit: minutes }
+
+  - id: rag_knowledgebase
+    v: 1
+    layer: knowledge
+    title: "RAG Knowledgebase"
+    description: "Tenant-scoped KB with ingestion/retrieval via Ragflow; documents stored in S3 (MinIO)."
+    saleor_value: "rag_knowledgebase"
+    config_schema:
+      type: object
+      properties:
+        kb_name: { type: string, maxLength: 80 }
+        backend: { type: string, enum: ["ragflow"], default: "ragflow" }
+        storage_backend: { type: string, enum: ["s3"], default: "s3" }
+        s3_bucket_strategy: { type: string, enum: ["bucket_per_org", "prefix_per_project"], default: "prefix_per_project" }
+        max_documents: { type: integer, minimum: 10, maximum: 20000, default: 200 }
+        chunk_size: { type: integer, minimum: 200, maximum: 2000, default: 800 }
+      required: [kb_name]
+    provisioning:
+      handler: "cap.rag_knowledgebase.v1"
+      resources: ["ragflow_kb", "minio_bucket_or_prefix", "vault_secret_ref_s3", "vault_secret_ref_ragflow"]
+    metering:
+      dimensions:
+        - { id: rag_ingestion_mb, unit: mb }
+        - { id: rag_queries, unit: calls }
+        - { id: storage_gb_days, unit: gb_days }
+
+  - id: guardrails_policy
+    v: 1
+    layer: governance
+    title: "Guardrails & Policies"
+    description: "Safety rules, allow/deny lists, content constraints, and policy-based tool gating."
+    saleor_value: "guardrails_policy"
+    config_schema:
+      type: object
+      properties:
+        blocked_topics: { type: array, items: { type: string } }
+        pii_redaction: { type: boolean, default: true }
+        max_request_size_kb: { type: integer, minimum: 64, maximum: 2048, default: 256 }
+    provisioning:
+      handler: "cap.guardrails_policy.v1"
+      resources: ["gateway_policy"]
+    metering:
+      dimensions: []
+
+  - id: audit_trail
+    v: 1
+    layer: governance
+    title: "Audit Trail"
+    description: "Immutable audit events for runs, tool calls, config changes, and connector updates."
+    saleor_value: "audit_trail"
+    config_schema:
+      type: object
+      properties:
+        retention_days: { type: integer, minimum: 7, maximum: 365, default: 30 }
+    provisioning:
+      handler: "cap.audit_trail.v1"
+      resources: ["audit_sink"]
+    metering:
+      dimensions:
+        - { id: audit_events, unit: events }
+
+  - id: scheduler_triggers
+    v: 1
+    layer: ops
+    title: "Scheduler & Triggers"
+    description: "Enables scheduled runs and webhooks for automations (plan-gated)."
+    saleor_value: "scheduler_triggers"
+    config_schema:
+      type: object
+      properties:
+        schedules:
+          type: array
+          items:
+            type: object
+            properties:
+              cron: { type: string }
+              enabled: { type: boolean, default: true }
+            required: [cron]
+    provisioning:
+      handler: "cap.scheduler_triggers.v1"
+      resources: ["scheduler_worker", "webhook_route"]
+    metering:
+      dimensions:
+        - { id: scheduled_runs, unit: runs }
+
+  - id: observability
+    v: 1
+    layer: ops
+    title: "Observability"
+    description: "Per-instance logs/metrics/traces correlation and basic dashboards."
+    saleor_value: "observability"
+    config_schema:
+      type: object
+      properties:
+        log_level: { type: string, enum: ["info", "debug", "warn", "error"], default: "info" }
+    provisioning:
+      handler: "cap.observability.v1"
+      resources: ["log_pipeline", "metrics_labels"]
+    metering:
+      dimensions: []
+
+  - id: credits_wallet
+    v: 1
+    layer: monetization
+    title: "Credits Wallet"
+    description: "Credit ledger accounting, monthly refills, top-ups, and depletion policies."
+    saleor_value: "credits_wallet"
+    config_schema:
+      type: object
+      properties:
+        low_balance_threshold: { type: integer, minimum: 0, default: 200 }
+        auto_suspend_on_zero: { type: boolean, default: true }
+    provisioning:
+      handler: "cap.credits_wallet.v1"
+      resources: []
+    metering:
+      dimensions:
+        - { id: credits_debited, unit: credits }

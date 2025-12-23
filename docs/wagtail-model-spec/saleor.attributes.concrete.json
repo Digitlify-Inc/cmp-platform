@@ -1,0 +1,158 @@
+[
+  {
+    "attribute": "gsv_category",
+    "type": "DROPDOWN",
+    "entity": "Product",
+    "required": true,
+    "values": [
+      "agent",
+      "app",
+      "assistant",
+      "automation"
+    ]
+  },
+  {
+    "attribute": "gsv_roles",
+    "type": "MULTISELECT",
+    "entity": "Product",
+    "required": true,
+    "values": [
+      "customer_support",
+      "sales_sdr",
+      "marketing",
+      "hr",
+      "it_helpdesk",
+      "operations",
+      "finance"
+    ]
+  },
+  {
+    "attribute": "gsv_outcomes",
+    "type": "MULTISELECT",
+    "entity": "Product",
+    "required": true,
+    "values": [
+      "customer_support",
+      "sales_outreach",
+      "knowledge_assistant",
+      "meeting_scheduler",
+      "marketing_content",
+      "data_extraction",
+      "monitoring_alerting",
+      "hr_ops"
+    ]
+  },
+  {
+    "attribute": "gsv_capabilities",
+    "type": "MULTISELECT",
+    "entity": "Product",
+    "required": true,
+    "values": [
+      "prompt_orchestrator",
+      "tool_connectors",
+      "mcp_tools",
+      "api_endpoint",
+      "chat_ui",
+      "web_widget",
+      "multilingual",
+      "multimodal_vision",
+      "multimodal_audio",
+      "rag_knowledgebase",
+      "guardrails_policy",
+      "audit_trail",
+      "scheduler_triggers",
+      "observability",
+      "credits_wallet"
+    ]
+  },
+  {
+    "attribute": "gsv_integrations",
+    "type": "MULTISELECT",
+    "entity": "Product",
+    "required": false,
+    "values": [
+      "slack",
+      "teams",
+      "gmail",
+      "smtp",
+      "google_calendar",
+      "outlook",
+      "zoom",
+      "jira",
+      "confluence",
+      "salesforce",
+      "hubspot",
+      "zendesk",
+      "freshdesk",
+      "gdrive",
+      "dropbox",
+      "s3_minio",
+      "webhooks",
+      "mcp_generic"
+    ]
+  },
+  {
+    "attribute": "gsv_deployment",
+    "type": "DROPDOWN",
+    "entity": "Product",
+    "required": true,
+    "values": [
+      "shared",
+      "dedicated_namespace",
+      "dedicated_vcluster",
+      "dedicated_cluster",
+      "on_prem"
+    ]
+  },
+  {
+    "attribute": "gsv_maturity",
+    "type": "DROPDOWN",
+    "entity": "Product",
+    "required": true,
+    "values": [
+      "beta",
+      "stable",
+      "enterprise"
+    ]
+  },
+  {
+    "attribute": "gsv_badges",
+    "type": "MULTISELECT",
+    "entity": "Product",
+    "required": false,
+    "values": [
+      "verified",
+      "featured",
+      "trial_available",
+      "new",
+      "trending"
+    ]
+  },
+  {
+    "attribute": "gsv_trial_available",
+    "type": "BOOLEAN",
+    "entity": "Product",
+    "required": false,
+    "values": [
+      true,
+      false
+    ]
+  },
+  {
+    "metadata": "gsv.credit_estimate",
+    "type": "OBJECT",
+    "entity": "Product",
+    "shape": {
+      "min_per_run": "int",
+      "typical_per_run": "int",
+      "max_per_run": "int",
+      "notes": "string"
+    }
+  },
+  {
+    "metadata": "gsv.cp_offering_id",
+    "type": "STRING",
+    "entity": "Product",
+    "notes": "Maps Saleor product -> Control Plane OfferingId (for provisioning & entitlements)."
+  }
+]

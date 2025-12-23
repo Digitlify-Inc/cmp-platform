@@ -1,0 +1,383 @@
+# Build CMP Services - Multi-architecture Docker images
+# Triggers on push to main or manual dispatch
+name: Build Services
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'services/**'
+      - '.github/workflows/build-services.yml'
+  workflow_dispatch:
+    inputs:
+      service:
+        description: Service to build
+        required: true
+        type: choice
+        options:
+          - all
+          - connector
+          - control-plane
+          - gateway
+          - marketplace
+          - runner
+          - provisioner
+      push:
+        description: Push to registry
+        required: true
+        type: boolean
+        default: true
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}/cmp
+
+concurrency:
+  group: build-${{ github.ref }}-${{ github.event.inputs.service || 'auto' }}
+  cancel-in-progress: true
+
+jobs:
+  # Determine which services changed (for push events)
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      connector: ${{ steps.filter.outputs.connector }}
+      control-plane: ${{ steps.filter.outputs.control-plane }}
+      gateway: ${{ steps.filter.outputs.gateway }}
+      marketplace: ${{ steps.filter.outputs.marketplace }}
+      runner: ${{ steps.filter.outputs.runner }}
+      provisioner: ${{ steps.filter.outputs.provisioner }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            connector:
+              - 'services/connector/**'
+            control-plane:
+              - 'services/control-plane/**'
+            gateway:
+              - 'services/gateway/**'
+            marketplace:
+              - 'services/marketplace/**'
+            runner:
+              - 'services/runner/**'
+            provisioner:
+              - 'services/provisioner/**'
+
+
+  # Build connector
+  build-connector:
+    name: Build connector
+    needs: changes
+    runs-on: ubuntu-latest
+    if: |
+      (github.event_name == 'workflow_dispatch' && (github.event.inputs.service == 'all' || github.event.inputs.service == 'connector')) ||
+      (github.event_name == 'push' && needs.changes.outputs.connector == 'true')
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_PREFIX }}-connector
+          tags: |
+            type=sha,prefix=
+            type=ref,event=branch
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: services/connector
+          platforms: linux/amd64,linux/arm64
+          push: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.push == 'true' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Build control-plane
+  build-control-plane:
+    name: Build control-plane
+    needs: changes
+    runs-on: ubuntu-latest
+    if: |
+      (github.event_name == 'workflow_dispatch' && (github.event.inputs.service == 'all' || github.event.inputs.service == 'control-plane')) ||
+      (github.event_name == 'push' && needs.changes.outputs.control-plane == 'true')
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_PREFIX }}-control-plane
+          tags: |
+            type=sha,prefix=
+            type=ref,event=branch
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: services/control-plane
+          platforms: linux/amd64,linux/arm64
+          push: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.push == 'true' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Build gateway
+  build-gateway:
+    name: Build gateway
+    needs: changes
+    runs-on: ubuntu-latest
+    if: |
+      (github.event_name == 'workflow_dispatch' && (github.event.inputs.service == 'all' || github.event.inputs.service == 'gateway')) ||
+      (github.event_name == 'push' && needs.changes.outputs.gateway == 'true')
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_PREFIX }}-gateway
+          tags: |
+            type=sha,prefix=
+            type=ref,event=branch
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: services/gateway
+          platforms: linux/amd64,linux/arm64
+          push: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.push == 'true' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Build marketplace (Next.js)
+  build-marketplace:
+    name: Build marketplace
+    needs: changes
+    runs-on: ubuntu-latest
+    if: |
+      (github.event_name == 'workflow_dispatch' && (github.event.inputs.service == 'all' || github.event.inputs.service == 'marketplace')) ||
+      (github.event_name == 'push' && needs.changes.outputs.marketplace == 'true')
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_PREFIX }}-marketplace
+          tags: |
+            type=sha,prefix=
+            type=ref,event=branch
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: services/marketplace
+          platforms: linux/amd64,linux/arm64
+          push: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.push == 'true' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            NEXT_PUBLIC_API_URL=https://api.dev.gsv.dev
+
+  # Build runner
+  build-runner:
+    name: Build runner
+    needs: changes
+    runs-on: ubuntu-latest
+    if: |
+      (github.event_name == 'workflow_dispatch' && (github.event.inputs.service == 'all' || github.event.inputs.service == 'runner')) ||
+      (github.event_name == 'push' && needs.changes.outputs.runner == 'true')
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_PREFIX }}-runner
+          tags: |
+            type=sha,prefix=
+            type=ref,event=branch
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: services/runner
+          platforms: linux/amd64,linux/arm64
+          push: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.push == 'true' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Build provisioner
+  build-provisioner:
+    name: Build provisioner
+    needs: changes
+    runs-on: ubuntu-latest
+    if: |
+      (github.event_name == 'workflow_dispatch' && (github.event.inputs.service == 'all' || github.event.inputs.service == 'provisioner')) ||
+      (github.event_name == 'push' && needs.changes.outputs.provisioner == 'true')
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_PREFIX }}-provisioner
+          tags: |
+            type=sha,prefix=
+            type=ref,event=branch
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: services/provisioner
+          platforms: linux/amd64,linux/arm64
+          push: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.push == 'true' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Summary job
+  summary:
+    name: Build Summary
+    needs: [build-connector, build-control-plane, build-gateway, build-marketplace, build-runner, build-provisioner]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Check results
+        run: |
+          echo "Build Results:"
+          echo "connector: ${{ needs.build-connector.result }}"
+          echo "control-plane: ${{ needs.build-control-plane.result }}"
+          echo "gateway: ${{ needs.build-gateway.result }}"
+          echo "marketplace: ${{ needs.build-marketplace.result }}"
+          echo "runner: ${{ needs.build-runner.result }}"
+          echo "provisioner: ${{ needs.build-provisioner.result }}"
+
+          # Fail if any required job failed (not skipped)
+          for result in "${{ needs.build-connector.result }}" "${{ needs.build-control-plane.result }}" "${{ needs.build-gateway.result }}" "${{ needs.build-marketplace.result }}" "${{ needs.build-runner.result }}" "${{ needs.build-provisioner.result }}"; do
+            if [ "$result" == "failure" ]; then
+              exit 1
+            fi
+          done

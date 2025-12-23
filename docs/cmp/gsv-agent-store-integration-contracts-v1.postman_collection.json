@@ -1,0 +1,1186 @@
+{
+  "info": {
+    "name": "GSV Agent Store \u2014 Integration Contracts Pack v1 (E2E)",
+    "_postman_id": "59ac7abf-9402-4fb1-a390-1432d01d299a",
+    "description": "Generated from 19-Integration-Contracts-Pack-v1.md. Variables: API_BASE, CP_BASE, KC_BASE, CONN_BASE, USER_JWT, SERVICE_JWT, RUNTIME_JWT, OFFERING_VERSION_ID, PLAN_ID, ORG_ID, PROJECT_ID, WALLET_ID, INSTANCE_ID, VAULT_PATH, CONNECTOR_ID, TOOL_PATH, ORIGIN, MINIO_PRESIGNED_PUT_URL, RAG_UPLOAD_ID.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "API_BASE",
+      "value": "https://api.example.com"
+    },
+    {
+      "key": "CP_BASE",
+      "value": "https://cp.example.com"
+    },
+    {
+      "key": "KC_BASE",
+      "value": "https://keycloak.example.com"
+    },
+    {
+      "key": "CONN_BASE",
+      "value": "https://conn.example.com"
+    },
+    {
+      "key": "USER_JWT",
+      "value": "<paste-user-access-token>"
+    },
+    {
+      "key": "SERVICE_JWT",
+      "value": "<paste-service-jwt>"
+    },
+    {
+      "key": "RUNTIME_JWT",
+      "value": "<paste-runtime-service-jwt>"
+    },
+    {
+      "key": "OFFERING_VERSION_ID",
+      "value": "ov_100"
+    },
+    {
+      "key": "PLAN_ID",
+      "value": "pro"
+    },
+    {
+      "key": "ORG_ID",
+      "value": "org_1"
+    },
+    {
+      "key": "PROJECT_ID",
+      "value": "proj_1"
+    },
+    {
+      "key": "WALLET_ID",
+      "value": "wal_1"
+    },
+    {
+      "key": "INSTANCE_ID",
+      "value": "inst_123"
+    },
+    {
+      "key": "ORIGIN",
+      "value": "https://customer-website.com"
+    },
+    {
+      "key": "CONNECTOR_ID",
+      "value": "zendesk"
+    },
+    {
+      "key": "VAULT_PATH",
+      "value": "kv/data/connectors/org_1/proj_1/bind_zendesk_1"
+    },
+    {
+      "key": "TOOL_PATH",
+      "value": "zendesk:createTicket"
+    },
+    {
+      "key": "MINIO_PRESIGNED_PUT_URL",
+      "value": "<paste-presigned-put-url>"
+    },
+    {
+      "key": "RAG_UPLOAD_ID",
+      "value": "up_001"
+    },
+    {
+      "key": "KC_REALM",
+      "value": "GSV"
+    },
+    {
+      "key": "KC_CLIENT_ID",
+      "value": "cp-service"
+    },
+    {
+      "key": "KC_CLIENT_SECRET",
+      "value": "<secret>"
+    },
+    {
+      "key": "RESERVATION_ID",
+      "value": "res_001"
+    },
+    {
+      "key": "BINDING_ID",
+      "value": "bind_zendesk_1"
+    },
+    {
+      "key": "SALEOR_ORDER_ID",
+      "value": "T3JkZXI6MTIz"
+    },
+    {
+      "key": "SALEOR_LINE_ID",
+      "value": "T3JkZXJMaW5lOjQ1"
+    },
+    {
+      "key": "WIDGET_TOKEN",
+      "value": "wjt_..."
+    },
+    {
+      "key": "RUN_ID",
+      "value": "run_abc"
+    }
+  ],
+  "item": [
+    {
+      "name": "00 - Auth (optional)",
+      "item": [
+        {
+          "name": "Keycloak Token (Client Credentials) \u2014 Service JWT (optional)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{KC_BASE}}/realms/{{KC_REALM}}/protocol/openid-connect/token",
+              "host": [
+                "{{KC_BASE}}/realms/{{KC_REALM}}/protocol/openid-connect/token"
+              ]
+            },
+            "description": "Optional helper. Fill KC_REALM, KC_CLIENT_ID, KC_CLIENT_SECRET as collection/environment vars. Response access_token can be copied into SERVICE_JWT.",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "grant_type",
+                  "value": "client_credentials"
+                },
+                {
+                  "key": "client_id",
+                  "value": "{{KC_CLIENT_ID}}"
+                },
+                {
+                  "key": "client_secret",
+                  "value": "{{KC_CLIENT_SECRET}}"
+                },
+                {
+                  "key": "scope",
+                  "value": "openid"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.request.headers.has('X-Request-Id')) {",
+                  "  pm.request.headers.add({ key: 'X-Request-Id', value: pm.variables.replaceIn('{{$guid}}') });",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200 or 4xx (needs config)\", function () {",
+                  "  pm.expect([200,400,401,403]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "01 - Control Plane (CP)",
+      "item": [
+        {
+          "name": "CP - Auto Workspace (org/project/wallet trial)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{CP_BASE}}/orgs/auto",
+              "host": [
+                "{{CP_BASE}}/orgs/auto"
+              ]
+            },
+            "description": "Creates or returns orgId/projectId/walletId for the current user. Sets ORG_ID/PROJECT_ID/WALLET_ID variables from response.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{USER_JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.request.headers.has('X-Request-Id')) {",
+                  "  pm.request.headers.add({ key: 'X-Request-Id', value: pm.variables.replaceIn('{{$guid}}') });",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", function(){ pm.response.to.have.status(200); });",
+                  "const j = pm.response.json();",
+                  "if (j.orgId) pm.collectionVariables.set(\"ORG_ID\", j.orgId);",
+                  "if (j.projectId) pm.collectionVariables.set(\"PROJECT_ID\", j.projectId);",
+                  "if (j.walletId) pm.collectionVariables.set(\"WALLET_ID\", j.walletId);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CP - Create Instance (activation)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Idempotency-Key",
+                "value": "ui:{{ORG_ID}}:{{PROJECT_ID}}:{{$guid}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{CP_BASE}}/instances",
+              "host": [
+                "{{CP_BASE}}/instances"
+              ]
+            },
+            "description": "Creates an instance without commerce webhook. Sets INSTANCE_ID from response.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{USER_JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"offeringVersionId\": \"{{OFFERING_VERSION_ID}}\",\n  \"orgId\": \"{{ORG_ID}}\",\n  \"projectId\": \"{{PROJECT_ID}}\",\n  \"planId\": \"{{PLAN_ID}}\",\n  \"instanceName\": \"My Instance (Smoke)\",\n  \"overrides\": {}\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.request.headers.has('X-Request-Id')) {",
+                  "  pm.request.headers.add({ key: 'X-Request-Id', value: pm.variables.replaceIn('{{$guid}}') });",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201\", function(){ pm.expect([201,200]).to.include(pm.response.code); });",
+                  "const j = pm.response.json();",
+                  "if (j.instanceId) pm.collectionVariables.set(\"INSTANCE_ID\", j.instanceId);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CP - Get Instance",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{CP_BASE}}/instances/{{INSTANCE_ID}}",
+              "host": [
+                "{{CP_BASE}}/instances/{{INSTANCE_ID}}"
+              ]
+            },
+            "description": "Fetches instance state and effectiveConfig.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{USER_JWT}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.request.headers.has('X-Request-Id')) {",
+                  "  pm.request.headers.add({ key: 'X-Request-Id', value: pm.variables.replaceIn('{{$guid}}') });",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", function(){ pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CP - Get Entitlements",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{CP_BASE}}/instances/{{INSTANCE_ID}}/entitlements",
+              "host": [
+                "{{CP_BASE}}/instances/{{INSTANCE_ID}}/entitlements"
+              ]
+            },
+            "description": "Gateway uses this to compute capability allowlists and limits.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{SERVICE_JWT}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.request.headers.has('X-Request-Id')) {",
+                  "  pm.request.headers.add({ key: 'X-Request-Id', value: pm.variables.replaceIn('{{$guid}}') });",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", function(){ pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CP - Billing Authorize (reserve budget)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Idempotency-Key",
+                "value": "run:{{INSTANCE_ID}}:{{$guid}}:authorize"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{CP_BASE}}/billing/authorize",
+              "host": [
+                "{{CP_BASE}}/billing/authorize"
+              ]
+            },
+            "description": "Reserve a budget for a run. Use only if you are testing billing directly (Gateway normally does this). Saves RESERVATION_ID.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{SERVICE_JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"instanceId\": \"{{INSTANCE_ID}}\",\n  \"requestedBudget\": 25\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.request.headers.has('X-Request-Id')) {",
+                  "  pm.request.headers.add({ key: 'X-Request-Id', value: pm.variables.replaceIn('{{$guid}}') });",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", function(){ pm.response.to.have.status(200); });",
+                  "const j = pm.response.json();",
+                  "if (j.reservationId) pm.collectionVariables.set(\"RESERVATION_ID\", j.reservationId);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CP - Billing Settle (debit actual usage)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Idempotency-Key",
+                "value": "{{RESERVATION_ID}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{CP_BASE}}/billing/settle",
+              "host": [
+                "{{CP_BASE}}/billing/settle"
+              ]
+            },
+            "description": "Idempotent by reservationId. Safe to retry on timeouts.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{SERVICE_JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reservationId\": \"{{RESERVATION_ID}}\",\n  \"instanceId\": \"{{INSTANCE_ID}}\",\n  \"usage\": {\n    \"llm_tokens_in\": 120,\n    \"llm_tokens_out\": 220,\n    \"tool_calls\": 1,\n    \"requests\": 1,\n    \"rag_queries\": 0,\n    \"rag_ingestion_mb\": 0\n  }\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.request.headers.has('X-Request-Id')) {",
+                  "  pm.request.headers.add({ key: 'X-Request-Id', value: pm.variables.replaceIn('{{$guid}}') });",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", function(){ pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CP - Wallet Top-up (credits)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Idempotency-Key",
+                "value": "topup:{{WALLET_ID}}:{{$guid}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{CP_BASE}}/wallets/{{WALLET_ID}}/topups",
+              "host": [
+                "{{CP_BASE}}/wallets/{{WALLET_ID}}/topups"
+              ]
+            },
+            "description": "Applies credits to a wallet (idempotent).",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{SERVICE_JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"creditsAmount\": 500,\n  \"idempotencyKey\": \"topup:{{WALLET_ID}}:{{$guid}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.request.headers.has('X-Request-Id')) {",
+                  "  pm.request.headers.add({ key: 'X-Request-Id', value: pm.variables.replaceIn('{{$guid}}') });",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", function(){ pm.expect([200,201]).to.include(pm.response.code); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CP - Create Connector Binding (Vault-backed)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{CP_BASE}}/connectors/bindings",
+              "host": [
+                "{{CP_BASE}}/connectors/bindings"
+              ]
+            },
+            "description": "Creates a connector binding that points to a Vault path. Stores BINDING_ID.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{USER_JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orgId\": \"{{ORG_ID}}\",\n  \"projectId\": \"{{PROJECT_ID}}\",\n  \"connectorId\": \"{{CONNECTOR_ID}}\",\n  \"displayName\": \"Zendesk (Smoke)\",\n  \"vaultPath\": \"{{VAULT_PATH}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.request.headers.has('X-Request-Id')) {",
+                  "  pm.request.headers.add({ key: 'X-Request-Id', value: pm.variables.replaceIn('{{$guid}}') });",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 or 200\", function(){ pm.expect([201,200]).to.include(pm.response.code); });",
+                  "const j = pm.response.json();",
+                  "if (j.bindingId) pm.collectionVariables.set(\"BINDING_ID\", j.bindingId);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CP - Revoke Connector Binding",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{CP_BASE}}/connectors/bindings/{{BINDING_ID}}/revoke",
+              "host": [
+                "{{CP_BASE}}/connectors/bindings/{{BINDING_ID}}/revoke"
+              ]
+            },
+            "description": "Revokes a connector binding. Subsequent tool calls must be denied.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{USER_JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.request.headers.has('X-Request-Id')) {",
+                  "  pm.request.headers.add({ key: 'X-Request-Id', value: pm.variables.replaceIn('{{$guid}}') });",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", function(){ pm.expect([200,204]).to.include(pm.response.code); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CP - Ingest Saleor OrderFullyPaid (normalized)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Idempotency-Key",
+                "value": "saleor:{{SALEOR_ORDER_ID}}:{{SALEOR_LINE_ID}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{CP_BASE}}/integrations/saleor/order-paid",
+              "host": [
+                "{{CP_BASE}}/integrations/saleor/order-paid"
+              ]
+            },
+            "description": "Use this to simulate Saleor \u2192 Provisioner \u2192 Control Plane without standing up the Provisioner App.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{SERVICE_JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{SALEOR_ORDER_ID}}\",\n  \"occurredAt\": \"2025-12-17T18:36:16.279145Z\",\n  \"customerId\": \"buyer@example.com\",\n  \"idempotencyKey\": \"saleor:{{SALEOR_ORDER_ID}}:{{SALEOR_LINE_ID}}\",\n  \"lines\": [\n    {\n      \"lineId\": \"{{SALEOR_LINE_ID}}\",\n      \"kind\": \"offering_plan\",\n      \"offeringVersionId\": \"{{OFFERING_VERSION_ID}}\",\n      \"planId\": \"{{PLAN_ID}}\"\n    }\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.request.headers.has('X-Request-Id')) {",
+                  "  pm.request.headers.add({ key: 'X-Request-Id', value: pm.variables.replaceIn('{{$guid}}') });",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", function(){ pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "02 - Gateway (public execution)",
+      "item": [
+        {
+          "name": "GW - Widget Session Init (origin allowlist + branding)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{API_BASE}}/v1/widget/session:init",
+              "host": [
+                "{{API_BASE}}/v1/widget/session:init"
+              ]
+            },
+            "description": "Issues widgetToken and returns theming config. Should validate origin against allowed_domains.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"instanceId\": \"{{INSTANCE_ID}}\",\n  \"origin\": \"{{ORIGIN}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.request.headers.has('X-Request-Id')) {",
+                  "  pm.request.headers.add({ key: 'X-Request-Id', value: pm.variables.replaceIn('{{$guid}}') });",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 or 403\", function(){ pm.expect([200,403]).to.include(pm.response.code); });",
+                  "if (pm.response.code === 200) {",
+                  "  const j = pm.response.json();",
+                  "  if (j.widgetToken) pm.collectionVariables.set(\"WIDGET_TOKEN\", j.widgetToken);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GW - Run Instance (buyer API)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{API_BASE}}/v1/runs",
+              "host": [
+                "{{API_BASE}}/v1/runs"
+              ]
+            },
+            "description": "Executes the instance through Gateway \u2192 Runner \u2192 Runtime. Gateway enforces entitlements + credits.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{USER_JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"instanceId\": \"{{INSTANCE_ID}}\",\n  \"input\": {\n    \"query\": \"Hello, help me reset my password.\"\n  },\n  \"metadata\": {\n    \"channel\": \"web\",\n    \"locale\": \"en-US\"\n  }\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.request.headers.has('X-Request-Id')) {",
+                  "  pm.request.headers.add({ key: 'X-Request-Id', value: pm.variables.replaceIn('{{$guid}}') });",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 or 403/503\", function(){ pm.expect([200,403,503]).to.include(pm.response.code); });",
+                  "if (pm.response.code === 200) {",
+                  "  const j = pm.response.json();",
+                  "  if (j.runId) pm.collectionVariables.set(\"RUN_ID\", j.runId);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "03 - Connector/MCP Gateway (optional)",
+      "item": [
+        {
+          "name": "Connector GW - Invoke Tool (optional)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Run-Id",
+                "value": "{{RUN_ID}}"
+              },
+              {
+                "key": "X-Instance-Id",
+                "value": "{{INSTANCE_ID}}"
+              },
+              {
+                "key": "X-Org-Id",
+                "value": "{{ORG_ID}}"
+              },
+              {
+                "key": "X-Project-Id",
+                "value": "{{PROJECT_ID}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{CONN_BASE}}/v1/tools/{{TOOL_PATH}}:invoke",
+              "host": [
+                "{{CONN_BASE}}/v1/tools/{{TOOL_PATH}}:invoke"
+              ]
+            },
+            "description": "Tool calls should never include secrets; Connector Gateway reads secrets from Vault by bindingId scope.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{RUNTIME_JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bindingId\": \"{{BINDING_ID}}\",\n  \"args\": {\n    \"subject\": \"Password reset\",\n    \"body\": \"User cannot login\",\n    \"priority\": \"high\"\n  }\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.request.headers.has('X-Request-Id')) {",
+                  "  pm.request.headers.add({ key: 'X-Request-Id', value: pm.variables.replaceIn('{{$guid}}') });",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200/403/503\", function(){ pm.expect([200,403,503]).to.include(pm.response.code); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "04 - RAG (optional)",
+      "item": [
+        {
+          "name": "RAG - Presign Upload (optional)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{CP_BASE}}/instances/{{INSTANCE_ID}}/rag/uploads:presign",
+              "host": [
+                "{{CP_BASE}}/instances/{{INSTANCE_ID}}/rag/uploads:presign"
+              ]
+            },
+            "description": "Returns uploadId and pre-signed PUT url. Endpoint is part of integration contracts even if not yet in CP OpenAPI.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{USER_JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"filename\": \"kb.pdf\",\n  \"contentType\": \"application/pdf\",\n  \"sizeBytes\": 1048576\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.request.headers.has('X-Request-Id')) {",
+                  "  pm.request.headers.add({ key: 'X-Request-Id', value: pm.variables.replaceIn('{{$guid}}') });",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200/404\", function(){ pm.expect([200,404]).to.include(pm.response.code); });",
+                  "if (pm.response.code === 200) {",
+                  "  const j = pm.response.json();",
+                  "  if (j.uploadId) pm.collectionVariables.set(\"RAG_UPLOAD_ID\", j.uploadId);",
+                  "  if (j.putUrl) pm.collectionVariables.set(\"MINIO_PRESIGNED_PUT_URL\", j.putUrl);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "RAG - PUT object to MinIO (use MINIO_PRESIGNED_PUT_URL)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/pdf"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{MINIO_PRESIGNED_PUT_URL}}",
+              "host": [
+                "{{MINIO_PRESIGNED_PUT_URL}}"
+              ]
+            },
+            "description": "Upload the file bytes to the pre-signed URL. In Postman, switch to 'binary' and select kb.pdf.",
+            "body": {
+              "mode": "file",
+              "file": {
+                "src": "kb.pdf"
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.request.headers.has('X-Request-Id')) {",
+                  "  pm.request.headers.add({ key: 'X-Request-Id', value: pm.variables.replaceIn('{{$guid}}') });",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200/204/403\", function(){ pm.expect([200,204,403]).to.include(pm.response.code); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "RAG - Ingest Upload (optional)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{CP_BASE}}/instances/{{INSTANCE_ID}}/rag/uploads/{{RAG_UPLOAD_ID}}:ingest",
+              "host": [
+                "{{CP_BASE}}/instances/{{INSTANCE_ID}}/rag/uploads/{{RAG_UPLOAD_ID}}:ingest"
+              ]
+            },
+            "description": "Triggers Ragflow ingestion after upload. Expected to return job status.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{USER_JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"chunking\": {\n    \"strategy\": \"semantic\",\n    \"maxTokens\": 800\n  }\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.request.headers.has('X-Request-Id')) {",
+                  "  pm.request.headers.add({ key: 'X-Request-Id', value: pm.variables.replaceIn('{{$guid}}') });",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200/404\", function(){ pm.expect([200,404]).to.include(pm.response.code); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

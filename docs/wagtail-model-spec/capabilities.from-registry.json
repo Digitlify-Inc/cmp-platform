@@ -1,0 +1,166 @@
+[
+  {
+    "registry_id": "prompt_orchestrator",
+    "saleor_value": "prompt_orchestrator",
+    "layer": "intelligence",
+    "title": "Prompt Orchestrator",
+    "description": "Base prompt + variables + system instructions; supports template prompts and guardrails hooks.",
+    "group_hint": "intelligence",
+    "metering_dimensions": [
+      "llm_tokens_in",
+      "llm_tokens_out"
+    ]
+  },
+  {
+    "registry_id": "tool_connectors",
+    "saleor_value": "tool_connectors",
+    "layer": "integrations",
+    "title": "Tool Connectors",
+    "description": "Enables tool calling via Connector Gateway with policy, scopes, and audit logs.",
+    "group_hint": "integrations",
+    "metering_dimensions": [
+      "tool_calls"
+    ]
+  },
+  {
+    "registry_id": "mcp_tools",
+    "saleor_value": "mcp_tools",
+    "layer": "integrations",
+    "title": "MCP Tools",
+    "description": "Allows MCP servers through a proxy with allowlists and auditing.",
+    "group_hint": "integrations",
+    "metering_dimensions": [
+      "mcp_calls"
+    ]
+  },
+  {
+    "registry_id": "api_endpoint",
+    "saleor_value": "api_endpoint",
+    "layer": "experience",
+    "title": "API Endpoint",
+    "description": "Exposes a secured API endpoint for invoking the instance via gateway routing.",
+    "group_hint": "experience",
+    "metering_dimensions": [
+      "requests"
+    ]
+  },
+  {
+    "registry_id": "chat_ui",
+    "saleor_value": "chat_ui",
+    "layer": "experience",
+    "title": "Chat UI",
+    "description": "Provides assistant chat surface with session history.",
+    "group_hint": "experience",
+    "metering_dimensions": [
+      "chat_sessions"
+    ]
+  },
+  {
+    "registry_id": "web_widget",
+    "saleor_value": "web_widget",
+    "layer": "experience",
+    "title": "Web Widget",
+    "description": "Embeddable website widget + domain allowlist.",
+    "group_hint": "experience",
+    "metering_dimensions": [
+      "widget_sessions"
+    ]
+  },
+  {
+    "registry_id": "multilingual",
+    "saleor_value": "multilingual",
+    "layer": "modalities_i18n",
+    "title": "Multilingual",
+    "description": "Language selection, fallback strategy, and translation options.",
+    "group_hint": "modalities_i18n",
+    "metering_dimensions": [
+      "translations"
+    ]
+  },
+  {
+    "registry_id": "multimodal_vision",
+    "saleor_value": "multimodal_vision",
+    "layer": "modalities_i18n",
+    "title": "Multimodal Vision",
+    "description": "Enables image/PDF visual understanding.",
+    "group_hint": "modalities_i18n",
+    "metering_dimensions": [
+      "image_calls"
+    ]
+  },
+  {
+    "registry_id": "multimodal_audio",
+    "saleor_value": "multimodal_audio",
+    "layer": "modalities_i18n",
+    "title": "Multimodal Audio",
+    "description": "Enables STT/TTS audio minutes.",
+    "group_hint": "modalities_i18n",
+    "metering_dimensions": [
+      "audio_minutes"
+    ]
+  },
+  {
+    "registry_id": "rag_knowledgebase",
+    "saleor_value": "rag_knowledgebase",
+    "layer": "knowledge",
+    "title": "RAG Knowledgebase",
+    "description": "Tenant-scoped KB with ingestion/retrieval via Ragflow; documents stored in S3 (MinIO).",
+    "group_hint": "knowledge",
+    "metering_dimensions": [
+      "rag_ingestion_mb",
+      "rag_queries",
+      "storage_gb_days"
+    ]
+  },
+  {
+    "registry_id": "guardrails_policy",
+    "saleor_value": "guardrails_policy",
+    "layer": "governance",
+    "title": "Guardrails & Policies",
+    "description": "Safety rules, allow/deny lists, content constraints, and policy-based tool gating.",
+    "group_hint": "governance",
+    "metering_dimensions": []
+  },
+  {
+    "registry_id": "audit_trail",
+    "saleor_value": "audit_trail",
+    "layer": "governance",
+    "title": "Audit Trail",
+    "description": "Immutable audit events for runs, tool calls, config changes, and connector updates.",
+    "group_hint": "governance",
+    "metering_dimensions": [
+      "audit_events"
+    ]
+  },
+  {
+    "registry_id": "scheduler_triggers",
+    "saleor_value": "scheduler_triggers",
+    "layer": "ops",
+    "title": "Scheduler & Triggers",
+    "description": "Enables scheduled runs and webhooks for automations (plan-gated).",
+    "group_hint": "ops",
+    "metering_dimensions": [
+      "scheduled_runs"
+    ]
+  },
+  {
+    "registry_id": "observability",
+    "saleor_value": "observability",
+    "layer": "ops",
+    "title": "Observability",
+    "description": "Per-instance logs/metrics/traces correlation and basic dashboards.",
+    "group_hint": "ops",
+    "metering_dimensions": []
+  },
+  {
+    "registry_id": "credits_wallet",
+    "saleor_value": "credits_wallet",
+    "layer": "monetization",
+    "title": "Credits Wallet",
+    "description": "Credit ledger accounting, monthly refills, top-ups, and depletion policies.",
+    "group_hint": "monetization",
+    "metering_dimensions": [
+      "credits_debited"
+    ]
+  }
+]

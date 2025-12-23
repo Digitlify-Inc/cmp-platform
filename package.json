@@ -1,0 +1,24 @@
+{
+  "name": "cmp-platform",
+  "version": "0.0.1",
+  "description": "Digitlify Cloud Marketplace Platform - Monorepo",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "agents/*",
+    "apis/*",
+    "components/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+  },
+  "devDependencies": {
+    "turbo": "latest",
+    "prettier": "^3.0.0",
+    "typescript": "^5.2.0"
+  }
+}

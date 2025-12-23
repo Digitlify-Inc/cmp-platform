@@ -1,0 +1,25 @@
+# Run Tests
+# MANUAL TRIGGER to save GitHub Actions minutes
+name: Test
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: What to test
+        required: true
+        type: choice
+        options:
+          - all
+          - services
+          - web
+          - lint
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run tests
+        run: echo "Running tests for \${{ github.event.inputs.target }}"

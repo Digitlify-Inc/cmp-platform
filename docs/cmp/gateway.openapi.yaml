@@ -1,0 +1,137 @@
+openapi: 3.0.3
+info:
+  title: GSV Gateway API
+  version: 0.1.0
+  description: >
+    The Gateway is the only public execution entrypoint. It validates auth,
+    enforces entitlements and credits, and routes to Runner/Runtime.
+servers:
+  - url: https://api.example.com
+security:
+  - bearerAuth: []
+tags:
+  - name: Runs
+  - name: Widget
+
+paths:
+  /v1/runs:
+    post:
+      tags: [Runs]
+      summary: Execute an instance run (chat or API)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RunRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunResponse'
+
+  /v1/widget/session:init:
+    post:
+      tags: [Widget]
+      summary: Initialize a widget session (origin allowlist + branding config)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WidgetSessionInitRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WidgetSessionInitResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code: { type: string }
+            message: { type: string }
+            details: { type: object }
+            traceId: { type: string }
+
+    RunRequest:
+      type: object
+      required: [instanceId, input]
+      properties:
+        instanceId: { type: string }
+        input:
+          type: object
+          properties:
+            query: { type: string }
+            messages:
+              type: array
+              items:
+                type: object
+                properties:
+                  role: { type: string, enum: [system, user, assistant] }
+                  content: { type: string }
+        metadata:
+          type: object
+
+    RunResponse:
+      type: object
+      properties:
+        runId: { type: string }
+        output:
+          type: object
+          properties:
+            text: { type: string }
+            data: { type: object }
+        usage:
+          type: object
+          properties:
+            llm_tokens_in: { type: integer }
+            llm_tokens_out: { type: integer }
+            tool_calls: { type: integer }
+            requests: { type: integer }
+        billing:
+          type: object
+          properties:
+            debited: { type: integer }
+            balance: { type: integer }
+
+    WidgetSessionInitRequest:
+      type: object
+      required: [instanceId, origin]
+      properties:
+        instanceId: { type: string }
+        origin: { type: string }
+
+    WidgetSessionInitResponse:
+      type: object
+      properties:
+        widgetToken: { type: string }
+        expiresInSec: { type: integer }
+        config:
+          type: object
+          properties:
+            brand_name: { type: string }
+            logo_url: { type: string }
+            avatar_url: { type: string }
+            primary_color: { type: string }
+            accent_color: { type: string }
+            font_family: { type: string }
+            launcher_text: { type: string }
+            position: { type: string }

@@ -1,0 +1,30 @@
+query OrderById($id: ID!) {
+	order(id: $id) {
+		...OrderDetails
+		shippingAddress {
+			firstName
+			lastName
+			streetAddress1
+			streetAddress2
+			city
+			postalCode
+			country {
+				code
+				country
+			}
+		}
+		billingAddress {
+			firstName
+			lastName
+			streetAddress1
+			streetAddress2
+			city
+			postalCode
+			country {
+				code
+				country
+			}
+		}
+		statusDisplay
+	}
+}

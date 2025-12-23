@@ -1,0 +1,125 @@
+id,file,suite,name
+E2E-001,agent-execution.spec.ts,AE1: Gateway Health,AE1.1: Gateway service is reachable
+E2E-002,agent-execution.spec.ts,AE1: Gateway Health,AE1.2: Gateway requires authentication for runs
+E2E-003,agent-execution.spec.ts,AE2: Langflow Runtime,AE2.1: Runtime health endpoint responds
+E2E-004,agent-execution.spec.ts,AE2: Langflow Runtime,AE2.2: Runtime API requires authentication
+E2E-005,agent-execution.spec.ts,AE3: Control Plane,AE3.1: Instances endpoint requires auth
+E2E-006,agent-execution.spec.ts,AE3: Control Plane,AE3.2: Offerings endpoint is public
+E2E-007,agent-execution.spec.ts,AE3: Control Plane,AE3.3: OpenAPI schema is available
+E2E-008,agent-execution.spec.ts,AE3: Control Plane,AE3.4: Swagger UI is accessible
+E2E-009,agent-execution.spec.ts,AE4: Run Console UI,AE4.1: Run console page structure
+E2E-010,agent-execution.spec.ts,AE5: Credit Authorization,AE5.1: Billing authorize requires auth
+E2E-011,agent-execution.spec.ts,AE5: Credit Authorization,AE5.2: Wallet endpoint requires auth
+E2E-012,agent-execution.spec.ts,AE6: My Agents Page,AE6.1: Instances page loads
+E2E-013,agent-execution.spec.ts,AE6: My Agents Page,AE6.2: Instance detail page exists
+E2E-014,agent-execution.spec.ts,AE7: Billing Integration,AE7.1: Billing page loads
+E2E-015,api-integration.spec.ts,Saleor GraphQL API,Products query returns data
+E2E-016,api-integration.spec.ts,Saleor GraphQL API,Collections query returns data
+E2E-017,api-integration.spec.ts,Saleor GraphQL API,Channel query returns default-channel
+E2E-018,api-integration.spec.ts,Control Plane API,Health check endpoint responds
+E2E-019,api-integration.spec.ts,Control Plane API,Offerings endpoint returns data
+E2E-020,api-integration.spec.ts,Control Plane API,Organizations endpoint requires auth
+E2E-021,api-integration.spec.ts,Main Site + Marketplace Health,Site health check responds
+E2E-022,api-integration.spec.ts,Main Site + Marketplace Health,Site serves HTML
+E2E-023,api-integration.spec.ts,Main Site + Marketplace Health,Marketplace route is accessible
+E2E-024,api-integration.spec.ts,SSO Health,Keycloak realm is accessible
+E2E-025,api-integration.spec.ts,Dashboard Health,Saleor Dashboard serves UI
+E2E-026,buyer-e2e-journey.spec.ts,Buyer Journey: Phase 1 - Discovery,BJ1.1: Homepage loads and redirects to marketplace
+E2E-027,buyer-e2e-journey.spec.ts,Buyer Journey: Phase 1 - Discovery,BJ1.2: Marketplace page displays offerings
+E2E-028,buyer-e2e-journey.spec.ts,Buyer Journey: Phase 1 - Discovery,BJ1.3: Category navigation works
+E2E-029,buyer-e2e-journey.spec.ts,Buyer Journey: Phase 1 - Discovery,BJ1.4: Search bar is functional
+E2E-030,buyer-e2e-journey.spec.ts,Buyer Journey: Phase 2 - Evaluation,BJ2.1: Product detail page loads
+E2E-031,buyer-e2e-journey.spec.ts,Buyer Journey: Phase 2 - Evaluation,BJ2.2: Product page shows pricing
+E2E-032,buyer-e2e-journey.spec.ts,Buyer Journey: Phase 2 - Evaluation,BJ2.3: Product page shows capabilities
+E2E-033,buyer-e2e-journey.spec.ts,Buyer Journey: Phase 2 - Evaluation,BJ2.4: Try Free button is visible
+E2E-034,buyer-e2e-journey.spec.ts,Buyer Journey: Phase 2 - Evaluation,BJ2.5: Add to Cart button is visible
+E2E-035,buyer-e2e-journey.spec.ts,Buyer Journey: Phase 3 - Cart & Checkout,BJ3.1: Add product to cart
+E2E-036,buyer-e2e-journey.spec.ts,Buyer Journey: Phase 3 - Cart & Checkout,BJ3.2: Cart page displays items
+E2E-037,buyer-e2e-journey.spec.ts,Buyer Journey: Phase 3 - Cart & Checkout,BJ3.3: Checkout button navigates correctly
+E2E-038,buyer-e2e-journey.spec.ts,Buyer Journey: Phase 3 - Cart & Checkout,BJ3.4: Checkout page loads Saleor checkout component
+E2E-039,buyer-e2e-journey.spec.ts,Buyer Journey: Phase 4 - Authentication,BJ4.1: Sign in button visible
+E2E-040,buyer-e2e-journey.spec.ts,Buyer Journey: Phase 4 - Authentication,BJ4.2: Sign in redirects to SSO
+E2E-041,buyer-e2e-journey.spec.ts,Buyer Journey: Phase 5 - Account Management,BJ5.1: Account page accessible
+E2E-042,buyer-e2e-journey.spec.ts,Buyer Journey: Phase 5 - Account Management,BJ5.2: Instances/My Agents page accessible
+E2E-043,buyer-e2e-journey.spec.ts,Buyer Journey: Phase 5 - Account Management,BJ5.3: Billing page accessible
+E2E-044,buyer-e2e-journey.spec.ts,Buyer Journey: Phase 5 - Account Management,BJ5.4: Settings page accessible
+E2E-045,buyer-e2e-journey.spec.ts,Buyer Journey: Phase 5 - Account Management,BJ5.5: Orders page accessible
+E2E-046,buyer-e2e-journey.spec.ts,Buyer Journey: Phase 6 - Instance Access,BJ6.1: Run page structure exists
+E2E-047,buyer-e2e-journey.spec.ts,Buyer Journey: Complete Flow Smoke Test,BJ-SMOKE: Browse -> Product -> Cart -> Checkout flow
+E2E-048,buyer-journey.spec.ts,B1: Anonymous Browse & Discovery,B1.1: Marketplace loads without login
+E2E-049,buyer-journey.spec.ts,B1: Anonymous Browse & Discovery,B1.2: Products are visible on marketplace page
+E2E-050,buyer-journey.spec.ts,B1: Anonymous Browse & Discovery,B1.3: Category tabs filter products
+E2E-051,buyer-journey.spec.ts,B1: Anonymous Browse & Discovery,B1.4: Search functionality works
+E2E-052,buyer-journey.spec.ts,B1: Anonymous Browse & Discovery,B1.5: Product card click navigates to detail page
+E2E-053,buyer-journey.spec.ts,B2: Product Evaluation,B2.1: Product detail page displays real data
+E2E-054,buyer-journey.spec.ts,B2: Product Evaluation,B2.2: Pricing information is displayed
+E2E-055,buyer-journey.spec.ts,B2: Product Evaluation,B2.3: Add to cart button is visible
+E2E-056,buyer-journey.spec.ts,B3: Authentication Flow,B3.1: Login button is visible
+E2E-057,buyer-journey.spec.ts,B3: Authentication Flow,B3.2: Login redirects to Keycloak
+E2E-058,buyer-journey.spec.ts,B3: Authentication Flow,B3.3: Successful login redirects back
+E2E-059,buyer-journey.spec.ts,B5: Add to Cart & Checkout,B5.1: Add product to cart
+E2E-060,buyer-journey.spec.ts,B5: Add to Cart & Checkout,B5.2: Cart page is accessible
+E2E-061,buyer-journey.spec.ts,B5: Add to Cart & Checkout,B5.3: Checkout button accessible
+E2E-062,buyer-journey.spec.ts,B7: Account Pages,B7.1: Account page requires authentication
+E2E-063,buyer-journey.spec.ts,B7: Account Pages,B7.2: Settings page is accessible
+E2E-064,buyer-journey.spec.ts,B7: Account Pages,B7.3: Billing page is accessible
+E2E-065,buyer-journey.spec.ts,B7: Account Pages,B7.4: My Agents page is accessible
+E2E-066,buyer-journey.spec.ts,Navigation & Layout,Header navigation links work
+E2E-067,buyer-journey.spec.ts,Navigation & Layout,Footer is present
+E2E-068,buyer-journey.spec.ts,Navigation & Layout,Mobile menu works on small screens
+E2E-069,credits-wallet.spec.ts,CW1: Wallet Endpoints,CW1.1: Wallet endpoint requires authentication
+E2E-070,credits-wallet.spec.ts,CW1: Wallet Endpoints,CW1.2: Wallet balance endpoint exists
+E2E-071,credits-wallet.spec.ts,CW1: Wallet Endpoints,CW1.3: Wallet ledger endpoint exists
+E2E-072,credits-wallet.spec.ts,CW2: Billing Endpoints,CW2.1: Billing authorize endpoint exists
+E2E-073,credits-wallet.spec.ts,CW2: Billing Endpoints,CW2.2: Billing settle endpoint exists
+E2E-074,credits-wallet.spec.ts,CW2: Billing Endpoints,CW2.3: Billing release endpoint exists
+E2E-075,credits-wallet.spec.ts,CW3: Top-Up Flow,CW3.1: Top-up endpoint exists
+E2E-076,credits-wallet.spec.ts,CW3: Top-Up Flow,CW3.2: Credit packs exist in Saleor
+E2E-077,credits-wallet.spec.ts,CW4: Marketplace Billing UI,CW4.1: Billing page loads
+E2E-078,credits-wallet.spec.ts,CW4: Marketplace Billing UI,CW4.2: Pricing page loads
+E2E-079,credits-wallet.spec.ts,CW4: Marketplace Billing UI,CW4.3: Redeem page loads
+E2E-080,credits-wallet.spec.ts,CW5: Gateway Credits Enforcement,CW5.1: Gateway run endpoint requires auth
+E2E-081,credits-wallet.spec.ts,CW5: Gateway Credits Enforcement,CW5.2: Gateway health check
+E2E-082,credits-wallet.spec.ts,CW-SMOKE: Credits System Smoke Test,All billing endpoints are protected
+E2E-083,full-e2e-flow.spec.ts,Platform Health,Control Plane is healthy
+E2E-084,full-e2e-flow.spec.ts,Platform Health,Saleor API responds
+E2E-085,full-e2e-flow.spec.ts,Marketplace Flow,Products are visible
+E2E-086,full-e2e-flow.spec.ts,Marketplace Flow,Product detail page loads
+E2E-087,full-e2e-flow.spec.ts,API Security,Runtime API requires auth
+E2E-088,full-e2e-flow.spec.ts,API Security,Studio API requires auth
+E2E-089,seller-e2e-journey.spec.ts,Seller Journey: Phase 1 - Dashboard Access,SJ1.1: Saleor Dashboard is accessible
+E2E-090,seller-e2e-journey.spec.ts,Seller Journey: Phase 1 - Dashboard Access,SJ1.2: Dashboard shows login form
+E2E-091,seller-e2e-journey.spec.ts,Seller Journey: Phase 1 - Dashboard Access,SJ1.3: Dashboard login works
+E2E-092,seller-e2e-journey.spec.ts,Seller Journey: Phase 2 - Product Management,SJ2.1: Products list is accessible
+E2E-093,seller-e2e-journey.spec.ts,Seller Journey: Phase 2 - Product Management,SJ2.2: Product creation page accessible
+E2E-094,seller-e2e-journey.spec.ts,Seller Journey: Phase 3 - Product Configuration,SJ3.1: Saleor GraphQL API is accessible
+E2E-095,seller-e2e-journey.spec.ts,Seller Journey: Phase 3 - Product Configuration,SJ3.2: Products are queryable via GraphQL
+E2E-096,seller-e2e-journey.spec.ts,Seller Journey: Phase 3 - Product Configuration,SJ3.3: Product categories exist
+E2E-097,seller-e2e-journey.spec.ts,Seller Journey: Phase 3 - Product Configuration,SJ3.4: Product collections exist
+E2E-098,seller-e2e-journey.spec.ts,Seller Journey: Phase 4 - Pricing,SJ4.1: Product variants (plans) are queryable
+E2E-099,seller-e2e-journey.spec.ts,Seller Journey: Phase 5 - Marketplace Visibility,SJ5.1: Products appear in marketplace
+E2E-100,seller-e2e-journey.spec.ts,Seller Journey: Phase 5 - Marketplace Visibility,SJ5.2: Product details are visible in marketplace
+E2E-101,seller-e2e-journey.spec.ts,Seller Journey: Phase 5 - Marketplace Visibility,SJ5.3: Product categories are filterable
+E2E-102,seller-e2e-journey.spec.ts,Seller Journey: Phase 6 - Order Monitoring,SJ6.1: Orders endpoint exists in Saleor
+E2E-103,seller-e2e-journey.spec.ts,Seller Journey: Phase 6 - Order Monitoring,SJ6.2: Dashboard orders page accessible
+E2E-104,seller-e2e-journey.spec.ts,Seller Journey: Phase 7 - Control Plane Integration,SJ7.1: Control Plane offerings API accessible
+E2E-105,seller-e2e-journey.spec.ts,Seller Journey: Phase 7 - Control Plane Integration,SJ7.2: Control Plane OpenAPI schema available
+E2E-106,seller-e2e-journey.spec.ts,Seller Journey: Complete Flow Smoke Test,SJ-SMOKE: Dashboard -> Products -> Marketplace visibility
+E2E-107,seller-journey.spec.ts,S1: Seller Dashboard Access,S1.1: Saleor Dashboard loads
+E2E-108,seller-journey.spec.ts,S2: Product Management,S2.1: Products list is visible after login
+E2E-109,seller-journey.spec.ts,S5: Marketplace Listing Verification,S5.1: Products appear in marketplace
+E2E-110,tenant-isolation.spec.ts,Operator Access,can access Studio
+E2E-111,tenant-isolation.spec.ts,Operator Access,can access Runtime
+E2E-112,tenant-isolation.spec.ts,Seller Access,can access Studio
+E2E-113,tenant-isolation.spec.ts,Seller Access,CANNOT access Runtime
+E2E-114,tenant-isolation.spec.ts,Buyer Access,CANNOT access Studio
+E2E-115,tenant-isolation.spec.ts,Buyer Access,CANNOT access Runtime
+E2E-116,tenant-isolation.spec.ts,Buyer Access,can access Marketplace
+E2E-117,webhook-integration.spec.ts,WH1: Webhook Endpoint Availability,WH1.1: Order-paid webhook endpoint exists
+E2E-118,webhook-integration.spec.ts,WH1: Webhook Endpoint Availability,WH1.2: Webhook requires signature
+E2E-119,webhook-integration.spec.ts,WH2: Saleor Webhook Configuration,WH2.1: Saleor API is accessible
+E2E-120,webhook-integration.spec.ts,WH2: Saleor Webhook Configuration,WH2.2: Checkout can be created
+E2E-121,webhook-integration.spec.ts,WH3: Instance Provisioning,WH3.1: Instances can be created via API
+E2E-122,webhook-integration.spec.ts,WH3: Instance Provisioning,WH3.2: Trial endpoint exists
+E2E-123,webhook-integration.spec.ts,WH4: Connector Bindings,WH4.1: Connector bindings endpoint exists
+E2E-124,webhook-integration.spec.ts,WH4: Connector Bindings,WH4.2: Connector revoke endpoint exists

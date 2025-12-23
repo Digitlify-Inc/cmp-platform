@@ -1,0 +1,457 @@
+# Saleor Attribute Setup for GSV Agent Store
+# ============================================
+# Run these mutations in Saleor Dashboard GraphQL Playground
+# or via API to create the required product attributes.
+#
+# Prerequisites:
+# 1. Create a "Offering" product type first
+# 2. Get the product type ID
+# 3. Run these mutations with the product type ID
+#
+# Note: Replace UHJvZHVjdFR5cGU6MQ== with your actual ProductType ID
+
+# =============================================================================
+# STEP 1: Create Attributes
+# =============================================================================
+
+# Category (single select)
+mutation CreateCategoryAttribute {
+  attributeCreate(input: {
+    name: "Category"
+    slug: "gsv_category"
+    type: PRODUCT_TYPE
+    inputType: DROPDOWN
+    filterableInStorefront: true
+    filterableInDashboard: true
+    availableInGrid: true
+    visibleInStorefront: true
+    storefrontSearchPosition: 1
+    values: [
+      { name: "Agents", value: "agent" }
+      { name: "Apps", value: "app" }
+      { name: "Assistants", value: "assistant" }
+      { name: "Automations", value: "automation" }
+    ]
+  }) {
+    attribute {
+      id
+      slug
+      name
+    }
+    errors {
+      field
+      message
+    }
+  }
+}
+
+# Roles (multi select)
+mutation CreateRolesAttribute {
+  attributeCreate(input: {
+    name: "Target Roles"
+    slug: "gsv_roles"
+    type: PRODUCT_TYPE
+    inputType: MULTISELECT
+    filterableInStorefront: true
+    filterableInDashboard: true
+    visibleInStorefront: true
+    values: [
+      { name: "Customer Support", value: "customer_support" }
+      { name: "Sales / SDR", value: "sales_sdr" }
+      { name: "Marketing", value: "marketing" }
+      { name: "HR", value: "hr" }
+      { name: "IT / Helpdesk", value: "it_helpdesk" }
+      { name: "Operations", value: "operations" }
+      { name: "Finance", value: "finance" }
+    ]
+  }) {
+    attribute {
+      id
+      slug
+      name
+    }
+    errors {
+      field
+      message
+    }
+  }
+}
+
+# Outcomes / Value Streams (multi select)
+mutation CreateOutcomesAttribute {
+  attributeCreate(input: {
+    name: "Outcomes"
+    slug: "gsv_value_stream"
+    type: PRODUCT_TYPE
+    inputType: MULTISELECT
+    filterableInStorefront: true
+    filterableInDashboard: true
+    visibleInStorefront: true
+    values: [
+      { name: "Reduce support tickets", value: "customer_support" }
+      { name: "Send personalized outreach", value: "sales_outreach" }
+      { name: "Turn documents into answers", value: "knowledge_assistant" }
+      { name: "Book meetings automatically", value: "meeting_scheduler" }
+      { name: "Create on-brand content", value: "marketing_content" }
+      { name: "Extract data from files", value: "data_extraction" }
+      { name: "Monitor & alert on changes", value: "monitoring_alerting" }
+      { name: "Streamline HR ops", value: "hr_ops" }
+    ]
+  }) {
+    attribute {
+      id
+      slug
+      name
+    }
+    errors {
+      field
+      message
+    }
+  }
+}
+
+# Capabilities (multi select)
+mutation CreateCapabilitiesAttribute {
+  attributeCreate(input: {
+    name: "Capabilities"
+    slug: "gsv_capabilities"
+    type: PRODUCT_TYPE
+    inputType: MULTISELECT
+    filterableInStorefront: true
+    filterableInDashboard: true
+    visibleInStorefront: true
+    values: [
+      { name: "Prompt Orchestrator", value: "prompt_orchestrator" }
+      { name: "Tool Connectors", value: "tool_connectors" }
+      { name: "MCP Tools", value: "mcp_tools" }
+      { name: "API Endpoint", value: "api_endpoint" }
+      { name: "Chat UI", value: "chat_ui" }
+      { name: "Web Widget", value: "web_widget" }
+      { name: "Multilingual", value: "multilingual" }
+      { name: "Multimodal Vision", value: "multimodal_vision" }
+      { name: "Multimodal Audio", value: "multimodal_audio" }
+      { name: "RAG Knowledgebase", value: "rag_knowledgebase" }
+      { name: "Guardrails & Policies", value: "guardrails_policy" }
+      { name: "Audit Trail", value: "audit_trail" }
+      { name: "Scheduler & Triggers", value: "scheduler_triggers" }
+      { name: "Observability", value: "observability" }
+      { name: "Credits Wallet", value: "credits_wallet" }
+    ]
+  }) {
+    attribute {
+      id
+      slug
+      name
+    }
+    errors {
+      field
+      message
+    }
+  }
+}
+
+# Integrations (multi select)
+mutation CreateIntegrationsAttribute {
+  attributeCreate(input: {
+    name: "Required Integrations"
+    slug: "gsv_integrations_required"
+    type: PRODUCT_TYPE
+    inputType: MULTISELECT
+    filterableInStorefront: true
+    filterableInDashboard: true
+    visibleInStorefront: true
+    values: [
+      { name: "Slack", value: "slack" }
+      { name: "Email (SMTP/IMAP)", value: "email" }
+      { name: "HubSpot", value: "hubspot" }
+      { name: "Salesforce", value: "salesforce" }
+      { name: "Google Calendar", value: "google_calendar" }
+      { name: "Google Drive", value: "google_drive" }
+      { name: "Notion", value: "notion" }
+      { name: "GitHub", value: "github" }
+      { name: "Jira", value: "jira" }
+      { name: "Zendesk", value: "zendesk" }
+      { name: "Intercom", value: "intercom" }
+      { name: "Webhook", value: "webhook" }
+    ]
+  }) {
+    attribute {
+      id
+      slug
+      name
+    }
+    errors {
+      field
+      message
+    }
+  }
+}
+
+# Deployment Mode (single select)
+mutation CreateDeploymentAttribute {
+  attributeCreate(input: {
+    name: "Deployment Mode"
+    slug: "gsv_deployment"
+    type: PRODUCT_TYPE
+    inputType: DROPDOWN
+    filterableInStorefront: true
+    filterableInDashboard: true
+    visibleInStorefront: true
+    values: [
+      { name: "Shared", value: "shared" }
+      { name: "Dedicated Namespace", value: "dedicated_namespace" }
+      { name: "Dedicated vCluster", value: "dedicated_vcluster" }
+      { name: "Dedicated Cluster", value: "dedicated_cluster" }
+      { name: "On-Premise", value: "on_prem" }
+    ]
+  }) {
+    attribute {
+      id
+      slug
+      name
+    }
+    errors {
+      field
+      message
+    }
+  }
+}
+
+# Maturity (single select)
+mutation CreateMaturityAttribute {
+  attributeCreate(input: {
+    name: "Maturity"
+    slug: "gsv_maturity"
+    type: PRODUCT_TYPE
+    inputType: DROPDOWN
+    filterableInStorefront: true
+    filterableInDashboard: true
+    visibleInStorefront: true
+    values: [
+      { name: "Beta", value: "beta" }
+      { name: "Stable", value: "stable" }
+      { name: "Enterprise", value: "enterprise" }
+    ]
+  }) {
+    attribute {
+      id
+      slug
+      name
+    }
+    errors {
+      field
+      message
+    }
+  }
+}
+
+# Trial Available (boolean)
+mutation CreateTrialAttribute {
+  attributeCreate(input: {
+    name: "Trial Available"
+    slug: "gsv_trial_available"
+    type: PRODUCT_TYPE
+    inputType: BOOLEAN
+    filterableInStorefront: true
+    filterableInDashboard: true
+    visibleInStorefront: true
+  }) {
+    attribute {
+      id
+      slug
+      name
+    }
+    errors {
+      field
+      message
+    }
+  }
+}
+
+# Badges (multi select)
+mutation CreateBadgesAttribute {
+  attributeCreate(input: {
+    name: "Badges"
+    slug: "gsv_badges"
+    type: PRODUCT_TYPE
+    inputType: MULTISELECT
+    filterableInStorefront: true
+    filterableInDashboard: true
+    visibleInStorefront: true
+    values: [
+      { name: "Verified", value: "verified" }
+      { name: "Featured", value: "featured" }
+      { name: "Trial Available", value: "trial_available" }
+      { name: "New", value: "new" }
+      { name: "Trending", value: "trending" }
+    ]
+  }) {
+    attribute {
+      id
+      slug
+      name
+    }
+    errors {
+      field
+      message
+    }
+  }
+}
+
+# =============================================================================
+# STEP 2: Assign Attributes to Product Type
+# =============================================================================
+
+# After creating attributes, get their IDs and assign to product type
+# Replace the IDs below with actual attribute IDs from step 1
+
+mutation AssignAttributesToProductType {
+  productTypeUpdate(
+    id: "UHJvZHVjdFR5cGU6MQ=="  # Replace with your Offering product type ID
+    input: {
+      productAttributes: [
+        "QXR0cmlidXRlOjE="   # gsv_category
+        "QXR0cmlidXRlOjI="   # gsv_roles
+        "QXR0cmlidXRlOjM="   # gsv_value_stream
+        "QXR0cmlidXRlOjQ="   # gsv_capabilities
+        "QXR0cmlidXRlOjU="   # gsv_integrations_required
+        "QXR0cmlidXRlOjY="   # gsv_deployment
+        "QXR0cmlidXRlOjc="   # gsv_maturity
+        "QXR0cmlidXRlOjg="   # gsv_trial_available
+        "QXR0cmlidXRlOjk="   # gsv_badges
+      ]
+    }
+  ) {
+    productType {
+      id
+      name
+      productAttributes {
+        slug
+        name
+      }
+    }
+    errors {
+      field
+      message
+    }
+  }
+}
+
+# =============================================================================
+# STEP 3: Create Collections for Categories
+# =============================================================================
+
+mutation CreateAgentsCollection {
+  collectionCreate(input: {
+    name: "Agents"
+    slug: "agents"
+    description: "Autonomous AI workers that complete tasks independently"
+    isPublished: true
+  }) {
+    collection {
+      id
+      slug
+      name
+    }
+    errors {
+      field
+      message
+    }
+  }
+}
+
+mutation CreateAppsCollection {
+  collectionCreate(input: {
+    name: "Apps"
+    slug: "apps"
+    description: "Structured AI-powered applications and workflows"
+    isPublished: true
+  }) {
+    collection {
+      id
+      slug
+      name
+    }
+    errors {
+      field
+      message
+    }
+  }
+}
+
+mutation CreateAssistantsCollection {
+  collectionCreate(input: {
+    name: "Assistants"
+    slug: "assistants"
+    description: "Interactive chat and voice assistants"
+    isPublished: true
+  }) {
+    collection {
+      id
+      slug
+      name
+    }
+    errors {
+      field
+      message
+    }
+  }
+}
+
+mutation CreateAutomationsCollection {
+  collectionCreate(input: {
+    name: "Automations"
+    slug: "automations"
+    description: "Event-driven workflows that run on autopilot"
+    isPublished: true
+  }) {
+    collection {
+      id
+      slug
+      name
+    }
+    errors {
+      field
+      message
+    }
+  }
+}
+
+# =============================================================================
+# VERIFICATION QUERIES
+# =============================================================================
+
+# Check all attributes were created
+query VerifyAttributes {
+  attributes(first: 20, filter: { search: "gsv_" }) {
+    edges {
+      node {
+        id
+        slug
+        name
+        inputType
+        choices(first: 20) {
+          edges {
+            node {
+              slug
+              name
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+# Check collections
+query VerifyCollections {
+  collections(first: 10, channel: "default-channel") {
+    edges {
+      node {
+        id
+        slug
+        name
+      }
+    }
+  }
+}

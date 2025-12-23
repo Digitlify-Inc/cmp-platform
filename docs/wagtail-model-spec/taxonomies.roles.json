@@ -1,0 +1,30 @@
+[
+  {
+    "key": "customer_support",
+    "label": "Customer Support"
+  },
+  {
+    "key": "sales_sdr",
+    "label": "Sales / SDR"
+  },
+  {
+    "key": "marketing",
+    "label": "Marketing"
+  },
+  {
+    "key": "hr",
+    "label": "HR"
+  },
+  {
+    "key": "it_helpdesk",
+    "label": "IT / Helpdesk"
+  },
+  {
+    "key": "operations",
+    "label": "Operations"
+  },
+  {
+    "key": "finance",
+    "label": "Finance"
+  }
+]

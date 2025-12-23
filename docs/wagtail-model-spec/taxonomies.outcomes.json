@@ -1,0 +1,34 @@
+[
+  {
+    "key": "customer_support",
+    "label": "Reduce support tickets"
+  },
+  {
+    "key": "sales_outreach",
+    "label": "Send personalized outreach"
+  },
+  {
+    "key": "knowledge_assistant",
+    "label": "Turn documents into answers"
+  },
+  {
+    "key": "meeting_scheduler",
+    "label": "Book meetings automatically"
+  },
+  {
+    "key": "marketing_content",
+    "label": "Create on-brand content"
+  },
+  {
+    "key": "data_extraction",
+    "label": "Extract data from files"
+  },
+  {
+    "key": "monitoring_alerting",
+    "label": "Monitor & alert on changes"
+  },
+  {
+    "key": "hr_ops",
+    "label": "Streamline HR ops"
+  }
+]

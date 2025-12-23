@@ -1,0 +1,520 @@
+openapi: 3.0.3
+info:
+  title: GSV Control Plane API
+  version: 0.1.0
+  description: >
+    Control Plane is the source of truth for offerings, versions, instances, entitlements, wallet/ledger,
+    billing (credits), connector bindings, and Saleor webhook ingestion.
+servers:
+  - url: https://cp.example.com
+security:
+  - bearerAuth: []
+tags:
+  - name: Integrations
+  - name: Orgs
+  - name: Offerings
+  - name: Instances
+  - name: Wallet
+  - name: Billing
+  - name: Connectors
+
+paths:
+  /integrations/saleor/order-paid:
+    post:
+      tags: [Integrations]
+      summary: Saleor OrderFullyPaid webhook ingestion (via Provisioner App)
+      description: >
+        Idempotent endpoint. Provisioner App must validate Saleor signature before calling.
+        CP must treat idempotencyKey as the primary idempotency key.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaleorOrderPaidEvent'
+      responses:
+        '200':
+          description: Processed (idempotent)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntegrationResult'
+
+  /orgs/auto:
+    post:
+      tags: [Orgs]
+      summary: Auto-create personal org/project/wallet for current user
+      responses:
+        '200':
+          description: Created or returned existing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Workspace'
+
+  /offerings:
+    get:
+      tags: [Offerings]
+      summary: List offerings
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Offering'
+    post:
+      tags: [Offerings]
+      summary: Create offering (internal)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OfferingCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Offering'
+
+  /offerings/{offeringId}/versions:
+    post:
+      tags: [Offerings]
+      summary: Create immutable offering version (artifact already uploaded to MinIO)
+      parameters:
+        - in: path
+          name: offeringId
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OfferingVersionCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OfferingVersion'
+    get:
+      tags: [Offerings]
+      summary: List offering versions
+      parameters:
+        - in: path
+          name: offeringId
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OfferingVersion'
+
+  /instances:
+    post:
+      tags: [Instances]
+      summary: Create instance (activation). Idempotent for commerce provisioning.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InstanceCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Instance'
+    get:
+      tags: [Instances]
+      summary: List instances
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Instance'
+
+  /instances/{instanceId}:
+    get:
+      tags: [Instances]
+      summary: Get instance
+      parameters:
+        - in: path
+          name: instanceId
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Instance'
+
+  /instances/{instanceId}/entitlements:
+    get:
+      tags: [Instances]
+      summary: Get computed entitlements (capabilities + limits)
+      parameters:
+        - in: path
+          name: instanceId
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Entitlements'
+
+  /wallets/{walletId}:
+    get:
+      tags: [Wallet]
+      summary: Get wallet
+      parameters:
+        - in: path
+          name: walletId
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Wallet'
+
+  /wallets/{walletId}/topups:
+    post:
+      tags: [Wallet]
+      summary: Apply a top-up (idempotent)
+      parameters:
+        - in: path
+          name: walletId
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WalletTopup'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Wallet'
+
+  /billing/authorize:
+    post:
+      tags: [Billing]
+      summary: Authorize a run (reserve budget)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BillingAuthorizeRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BillingAuthorizeResponse'
+
+  /billing/settle:
+    post:
+      tags: [Billing]
+      summary: Settle and debit actual usage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BillingSettleRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BillingSettleResponse'
+
+  /connectors/bindings:
+    post:
+      tags: [Connectors]
+      summary: Create connector binding (Vault-backed)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectorBindingCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorBinding'
+
+  /connectors/bindings/{bindingId}/revoke:
+    post:
+      tags: [Connectors]
+      summary: Revoke a connector binding
+      parameters:
+        - in: path
+          name: bindingId
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Revoked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorBinding'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code: { type: string }
+            message: { type: string }
+            details: { type: object }
+            traceId: { type: string }
+
+    SaleorOrderPaidEvent:
+      type: object
+      required: [orderId, lines, occurredAt, idempotencyKey]
+      properties:
+        orderId: { type: string }
+        occurredAt: { type: string, format: date-time }
+        customerId: { type: string }
+        idempotencyKey: { type: string, description: "saleor:orderId:lineId" }
+        lines:
+          type: array
+          items:
+            type: object
+            required: [lineId, kind]
+            properties:
+              lineId: { type: string }
+              kind: { type: string, enum: [offering_plan, credit_pack] }
+              offeringVersionId: { type: string }
+              planId: { type: string }
+              walletId: { type: string }
+              creditsAmount: { type: integer, minimum: 1 }
+
+    IntegrationResult:
+      type: object
+      properties:
+        processed: { type: boolean }
+        actions:
+          type: array
+          items: { type: string }
+
+    Workspace:
+      type: object
+      required: [orgId, projectId, walletId]
+      properties:
+        orgId: { type: string }
+        projectId: { type: string }
+        walletId: { type: string }
+        trialGranted: { type: boolean }
+
+    OfferingCreate:
+      type: object
+      required: [name, category, valueStreams]
+      properties:
+        name: { type: string }
+        category: { type: string, enum: [agent, app, assistant, automation] }
+        valueStreams:
+          type: array
+          items: { type: string }
+        description: { type: string }
+        saleorProductId: { type: string }
+
+    Offering:
+      allOf:
+        - $ref: '#/components/schemas/OfferingCreate'
+        - type: object
+          required: [offeringId, status]
+          properties:
+            offeringId: { type: string }
+            status: { type: string, enum: [draft, published, paused, eos, eol] }
+
+    OfferingVersionCreate:
+      type: object
+      required: [versionLabel, artifact]
+      properties:
+        versionLabel: { type: string, example: "1.0.0" }
+        artifact:
+          type: object
+          required: [s3Key, sha256]
+          properties:
+            s3Key: { type: string }
+            sha256: { type: string, minLength: 64, maxLength: 64 }
+        capabilities:
+          type: array
+          items: { type: string }
+        defaults:
+          type: object
+          description: "Offering-level default config (non-secret)."
+
+    OfferingVersion:
+      allOf:
+        - $ref: '#/components/schemas/OfferingVersionCreate'
+        - type: object
+          required: [offeringVersionId, createdAt]
+          properties:
+            offeringVersionId: { type: string }
+            createdAt: { type: string, format: date-time }
+            status: { type: string, enum: [draft, published, paused, deprecated] }
+
+    InstanceCreate:
+      type: object
+      required: [offeringVersionId, orgId, projectId, planId]
+      properties:
+        offeringVersionId: { type: string }
+        orgId: { type: string }
+        projectId: { type: string }
+        planId: { type: string }
+        instanceName: { type: string }
+        overrides:
+          type: object
+          description: "Instance overrides (non-secret)."
+        idempotencyKey: { type: string }
+
+    Instance:
+      allOf:
+        - $ref: '#/components/schemas/InstanceCreate'
+        - type: object
+          required: [instanceId, state]
+          properties:
+            instanceId: { type: string }
+            state: { type: string, enum: [requested, provisioning, active, paused, terminated] }
+            effectiveConfig:
+              type: object
+              description: "Computed config injected into runtime (non-secret)."
+
+    Entitlements:
+      type: object
+      required: [instanceId, capabilities]
+      properties:
+        instanceId: { type: string }
+        capabilities:
+          type: array
+          items:
+            type: object
+            required: [id]
+            properties:
+              id: { type: string }
+              limits: { type: object }
+
+    Wallet:
+      type: object
+      required: [walletId, balance]
+      properties:
+        walletId: { type: string }
+        balance: { type: integer }
+        currency: { type: string, enum: [credits], default: credits }
+
+    WalletTopup:
+      type: object
+      required: [creditsAmount, idempotencyKey]
+      properties:
+        creditsAmount: { type: integer, minimum: 1 }
+        idempotencyKey: { type: string }
+
+    BillingAuthorizeRequest:
+      type: object
+      required: [instanceId]
+      properties:
+        instanceId: { type: string }
+        requestedBudget: { type: integer, minimum: 0 }
+
+    BillingAuthorizeResponse:
+      type: object
+      required: [allowed, reservationId, budget]
+      properties:
+        allowed: { type: boolean }
+        reservationId: { type: string }
+        budget: { type: integer }
+        balance: { type: integer }
+
+    BillingSettleRequest:
+      type: object
+      required: [reservationId, instanceId, usage]
+      properties:
+        reservationId: { type: string }
+        instanceId: { type: string }
+        usage:
+          type: object
+          properties:
+            llm_tokens_in: { type: integer, minimum: 0 }
+            llm_tokens_out: { type: integer, minimum: 0 }
+            tool_calls: { type: integer, minimum: 0 }
+            requests: { type: integer, minimum: 0 }
+            rag_queries: { type: integer, minimum: 0 }
+            rag_ingestion_mb: { type: integer, minimum: 0 }
+
+    BillingSettleResponse:
+      type: object
+      properties:
+        debited: { type: integer }
+        balance: { type: integer }
+        ledgerEntryId: { type: string }
+        status: { type: string, enum: [settled, pending_reconciliation] }
+
+    ConnectorBindingCreate:
+      type: object
+      required: [orgId, projectId, connectorId, displayName, vaultPath]
+      properties:
+        orgId: { type: string }
+        projectId: { type: string }
+        connectorId: { type: string }
+        displayName: { type: string }
+        vaultPath: { type: string }
+
+    ConnectorBinding:
+      allOf:
+        - $ref: '#/components/schemas/ConnectorBindingCreate'
+        - type: object
+          required: [bindingId, status]
+          properties:
+            bindingId: { type: string }
+            status: { type: string, enum: [active, revoked] }

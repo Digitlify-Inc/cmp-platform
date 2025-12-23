@@ -1,0 +1,55 @@
+# Dependencies
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Build outputs
+dist/
+build/
+.next/
+*.egg-info/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+logs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+
+# Turbo
+.turbo/
+
+# Dependencies
+**/node_modules/
+**/.pnp
+
+# Python
+**/.venv/
+**/venv/
+**/__pycache__/
+
+# Build
+**/dist/
+**/build/
+**/.next/
+
+# Env
+**/.env
+**/.env.local
+
+# IDE
+**/.vscode/
+**/.idea/
+

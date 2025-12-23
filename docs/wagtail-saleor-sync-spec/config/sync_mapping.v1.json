@@ -1,0 +1,42 @@
+{
+  "saleor": {
+    "attributes": {
+      "category": "gsv_category",
+      "roles": "gsv_roles",
+      "outcomes": "gsv_value_stream",
+      "capabilities": "gsv_capabilities",
+      "integrations": "gsv_integrations_required",
+      "languages": "gsv_languages_supported",
+      "modalities": "gsv_modalities",
+      "deployment_modes": "gsv_deployment_modes_supported",
+      "trial": "gsv_trial_available",
+      "verified": "gsv_verified",
+      "badges": "gsv_badges",
+      "maturity": "gsv_maturity"
+    },
+    "metadata": [
+      "cp_offering_id",
+      "cp_offering_version_id",
+      "credits_estimate_min",
+      "credits_estimate_max",
+      "credits_estimate_label",
+      "outcome_tagline",
+      "primary_outcome",
+      "primary_role",
+      "card_image_url"
+    ]
+  },
+  "wagtail": {
+    "saleor_product_ref_fields": [
+      "saleor_product_id",
+      "saleor_product_slug"
+    ],
+    "required_fields": [
+      "cp_offering_id"
+    ]
+  },
+  "enforcement": {
+    "key_rules": "lowercase snake_case, stable keys",
+    "capability_keys_must_match_registry": true
+  }
+}

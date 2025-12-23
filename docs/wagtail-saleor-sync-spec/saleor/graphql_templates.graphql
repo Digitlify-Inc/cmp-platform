@@ -1,0 +1,58 @@
+# Saleor GraphQL snippets used by the sync command
+# Note: Adjust fields based on your Saleor version.
+
+query AttributeBySlug($slug: String!) {
+  attributes(first: 1, filter: { slugs: [$slug] }) {
+    edges { node { id slug name inputType entityType } }
+  }
+}
+
+query AttributeValues($id: ID!, $first: Int!) {
+  attribute(id: $id) {
+    id
+    slug
+    values(first: $first) {
+      edges { node { id slug name } }
+    }
+  }
+}
+
+mutation CreateAttributeValue($attributeId: ID!, $slug: String!, $name: String!) {
+  attributeValueCreate(input: { attribute: $attributeId, slug: $slug, name: $name }) {
+    attributeValue { id slug name }
+    errors { field message code }
+  }
+}
+
+query ProductById($id: ID!) {
+  product(id: $id) {
+    id
+    slug
+    name
+    attributes { attribute { slug } values { slug name } }
+    metadata { key value }
+  }
+}
+
+query ProductBySlug($slug: String!) {
+  products(first: 2, filter: { slugs: [$slug] }) {
+    edges { node {
+      id slug name
+      attributes { attribute { slug } values { slug name } }
+      metadata { key value }
+    } }
+  }
+}
+
+mutation UpdateProductMetadata($id: ID!, $input: [MetadataInput!]!) {
+  updateMetadata(id: $id, input: $input) {
+    errors { field message code }
+  }
+}
+
+mutation ProductUpdate($id: ID!, $input: ProductInput!) {
+  productUpdate(id: $id, input: $input) {
+    product { id }
+    errors { field message code }
+  }
+}

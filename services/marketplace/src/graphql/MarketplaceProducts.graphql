@@ -1,0 +1,27 @@
+query MarketplaceProducts(
+	$first: Int
+	$after: String
+	$channel: String!
+	$filter: ProductFilterInput
+	$sortBy: ProductOrder
+) {
+	products(
+		first: $first
+		after: $after
+		channel: $channel
+		filter: $filter
+		sortBy: $sortBy
+	) {
+		totalCount
+		edges {
+			node {
+				...MarketplaceProductItem
+			}
+			cursor
+		}
+		pageInfo {
+			hasNextPage
+			endCursor
+		}
+	}
+}

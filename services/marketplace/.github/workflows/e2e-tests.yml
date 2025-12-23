@@ -1,0 +1,180 @@
+name: E2E Tests
+
+on:
+  # Manual trigger with full options
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - staging
+      test_suite:
+        description: 'Test suite to run'
+        required: true
+        default: 'smoke'
+        type: choice
+        options:
+          - smoke
+          - all
+          - buyer-journey
+          - seller-journey
+          - api-integration
+      browser:
+        description: 'Browser to test'
+        required: false
+        default: 'chromium'
+        type: choice
+        options:
+          - chromium
+          - firefox
+          - webkit
+
+  # Auto-trigger on push to main (optimized - smoke tests only)
+  push:
+    branches: [main]
+    paths:
+      - 'services/marketplace/src/**'
+      - 'services/marketplace/e2e/**'
+      - 'services/marketplace/package.json'
+
+  # Auto-trigger on PR (optimized - smoke tests only, skip drafts)
+  pull_request:
+    branches: [main]
+    paths:
+      - 'services/marketplace/src/**'
+      - 'services/marketplace/e2e/**'
+      - 'services/marketplace/package.json'
+
+# Cancel in-progress runs on same branch to save minutes
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  E2E_BASE_URL: https://dev.gsv.dev
+
+jobs:
+  # Quick check if tests should run
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.filter.outputs.marketplace }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            marketplace:
+              - 'services/marketplace/src/**'
+              - 'services/marketplace/e2e/**'
+
+  # Smoke tests - fast subset for PRs and pushes
+  smoke-tests:
+    needs: changes
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (needs.changes.outputs.should_run == 'true' && github.event.pull_request.draft != true)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: services/marketplace
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/pnpm/store
+          key: pnpm-${{ hashFiles('services/marketplace/pnpm-lock.yaml') }}
+          restore-keys: pnpm-
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ hashFiles('services/marketplace/package.json') }}
+
+      - name: Install dependencies
+        working-directory: services/marketplace
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright (Chromium only)
+        working-directory: services/marketplace
+        run: pnpm exec playwright install chromium --with-deps
+
+      - name: Determine test scope
+        id: scope
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "suite=${{ inputs.test_suite || 'smoke' }}" >> $GITHUB_OUTPUT
+            echo "browser=${{ inputs.browser || 'chromium' }}" >> $GITHUB_OUTPUT
+            echo "env=${{ inputs.environment || 'dev' }}" >> $GITHUB_OUTPUT
+          else
+            # For auto-triggers, run minimal smoke tests only
+            echo "suite=smoke" >> $GITHUB_OUTPUT
+            echo "browser=chromium" >> $GITHUB_OUTPUT
+            echo "env=dev" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run tests
+        working-directory: services/marketplace
+        run: |
+          SUITE="${{ steps.scope.outputs.suite }}"
+          BROWSER="${{ steps.scope.outputs.browser }}"
+
+          case $SUITE in
+            smoke)
+              # Smoke tests: API health + basic navigation only
+              pnpm exec playwright test e2e/api-integration.spec.ts --project=$BROWSER --grep "health|healthy"
+              ;;
+            all)
+              pnpm exec playwright test e2e/ --project=$BROWSER
+              ;;
+            *)
+              pnpm exec playwright test "e2e/${SUITE}.spec.ts" --project=$BROWSER
+              ;;
+          esac
+        env:
+          E2E_BASE_URL: ${{ steps.scope.outputs.env == 'staging' && 'https://staging.gsv.dev' || 'https://dev.gsv.dev' }}
+          CI: true
+
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: e2e-report-${{ github.run_id }}
+          path: services/marketplace/e2e-report/
+          retention-days: 7
+
+  # Summary job
+  results:
+    needs: smoke-tests
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Summary
+        run: |
+          echo "## E2E Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Trigger | ${{ github.event_name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Status | ${{ needs.smoke-tests.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Branch | ${{ github.ref_name }} |" >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,47 @@
+fragment MarketplaceProductItem on Product {
+	id
+	name
+	slug
+	description
+	pricing {
+		priceRange {
+			start {
+				gross {
+					amount
+					currency
+				}
+			}
+		}
+	}
+	category {
+		id
+		name
+		slug
+	}
+	thumbnail(size: 512, format: WEBP) {
+		url
+		alt
+	}
+	# Platform attributes for filtering and display
+	attributes {
+		attribute {
+			slug
+			name
+		}
+		values {
+			slug
+			name
+		}
+	}
+	# Product metadata for credit estimates and Control Plane IDs
+	metadata {
+		key
+		value
+	}
+	# Collections for category mapping
+	collections {
+		id
+		name
+		slug
+	}
+}

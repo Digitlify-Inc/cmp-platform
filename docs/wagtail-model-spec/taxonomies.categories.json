@@ -1,0 +1,22 @@
+[
+  {
+    "key": "agent",
+    "label": "Agents",
+    "description": "Autonomous task workers (run per job)."
+  },
+  {
+    "key": "app",
+    "label": "Apps",
+    "description": "Structured AI-powered applications (forms/workflows/dashboards)."
+  },
+  {
+    "key": "assistant",
+    "label": "Assistants",
+    "description": "Interactive chat/voice/web assistants with context & knowledge."
+  },
+  {
+    "key": "automation",
+    "label": "Automations",
+    "description": "Triggers + actions + approvals running on autopilot."
+  }
+]

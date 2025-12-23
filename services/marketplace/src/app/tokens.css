@@ -1,0 +1,78 @@
+/**
+ * Digitlify Design Tokens
+ * Shared design system for CMS (Wagtail) + Marketplace (Next.js) + Auth (Keycloak)
+ * Source: PRD_GTM.md + DESIGN_GUIDE.md
+ */
+
+:root {
+  /* Brand Purple - Canonical */
+  --brand-50: #f5f0ff;
+  --brand-100: #e9ddff;
+  --brand-200: #d4bbff;
+  --brand-300: #bc95ff;
+  --brand-400: #a56eff;
+  --brand-500: #8f45ff;
+  --brand-600: #7c3aed; /* Primary - used for all primary CTAs */
+  --brand-700: #6d28d9;
+  --brand-800: #5b21b6;
+  --brand-900: #4c1d95;
+
+  /* Theme: LIGHT (default) */
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f8fafc;
+  --border: #e2e8f0;
+
+  --ink-900: #0f172a;
+  --ink-700: #334155;
+  --ink-500: #64748b;
+  --ink-300: #94a3b8;
+
+  --header-bg: rgba(255, 255, 255, 0.80);
+  --footer-bg: #f8fafc;
+
+  /* Semantics */
+  --success: #22c55e;
+  --warn: #f59e0b;
+  --error: #ef4444;
+
+  /* Radius */
+  --r-card: 16px;
+  --r-input: 12px;
+  --r-pill: 999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+  /* Layout */
+  --container: 1280px;
+}
+
+/* Theme: DARK */
+html.dark,
+html[data-theme="dark"] {
+  --bg: #0f172a;
+  --surface: #1e293b;
+  --surface-2: #334155;
+  --border: #475569;
+
+  --ink-900: #f8fafc;
+  --ink-700: #e2e8f0;
+  --ink-500: #94a3b8;
+  --ink-300: #64748b;
+
+  --header-bg: rgba(15, 23, 42, 0.85);
+  --footer-bg: #1e293b;
+
+  --success: #4ade80;
+  --warn: #fbbf24;
+  --error: #f87171;
+
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.4), 0 1px 2px -1px rgb(0 0 0 / 0.4);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.4);
+}

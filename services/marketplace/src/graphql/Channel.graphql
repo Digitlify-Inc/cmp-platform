@@ -1,0 +1,13 @@
+query Channel($slug: String!) {
+	channel(slug: $slug) {
+		id
+		name
+		slug
+		isActive
+		currencyCode
+		defaultCountry {
+			code
+			country
+		}
+	}
+}

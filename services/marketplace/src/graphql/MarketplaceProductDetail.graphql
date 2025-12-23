@@ -1,0 +1,95 @@
+# Detailed product query for marketplace offering detail page
+# Includes all attributes and metadata per docs/cmp/23-Saleor-Attribute-Schema-v1.md
+query MarketplaceProductDetail($slug: String!, $channel: String!) {
+	product(slug: $slug, channel: $channel) {
+		id
+		name
+		slug
+		description
+		seoTitle
+		seoDescription
+		pricing {
+			priceRange {
+				start {
+					gross {
+						amount
+						currency
+					}
+				}
+				stop {
+					gross {
+						amount
+						currency
+					}
+				}
+			}
+		}
+		category {
+			id
+			name
+			slug
+		}
+		thumbnail(size: 1024, format: WEBP) {
+			url
+			alt
+		}
+		media {
+			url
+			alt
+			type
+		}
+		# All attributes per schema §2
+		attributes {
+			attribute {
+				slug
+				name
+			}
+			values {
+				slug
+				name
+			}
+		}
+		# Private metadata for credits, CP IDs per schema §4
+		metadata {
+			key
+			value
+		}
+		# Collections for category mapping
+		collections {
+			id
+			name
+			slug
+		}
+		# Variants for subscription plans
+		variants {
+			id
+			name
+			sku
+			pricing {
+				price {
+					gross {
+						amount
+						currency
+					}
+				}
+			}
+			quantityAvailable
+			# Variant attributes (plan features)
+			attributes {
+				attribute {
+					slug
+					name
+				}
+				values {
+					slug
+					name
+				}
+			}
+			# Variant metadata (credits grant, plan ID)
+			metadata {
+				key
+				value
+			}
+		}
+	}
+}
