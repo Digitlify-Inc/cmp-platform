@@ -1,13 +1,29 @@
 import { defineConfig, devices } from '@playwright/test';
 
 /**
- * Playwright E2E Test Configuration for GSV Marketplace
+ * Playwright E2E Test Configuration for CMP Marketplace
  *
- * Test against local KinD cluster endpoints:
- * - Main Site + Marketplace: https://dev.gsv.dev
- * - Saleor API: https://store.dev.gsv.dev
- * - Keycloak SSO: https://sso.dev.gsv.dev
+ * Environments:
+ * - dev: dev.gsv.dev (GSVDEV development)
+ * - qa: qa.digitlify.com (Digitlify QA)
+ * - prod: digitlify.com (Digitlify Production)
+ *
+ * Usage:
+ *   E2E_ENV=qa pnpm test:e2e        # Run against QA
+ *   E2E_ENV=prod pnpm test:e2e      # Run against Prod
+ *   pnpm test:e2e                   # Run against dev (default)
  */
+
+const ENV = process.env.E2E_ENV || 'dev';
+
+const DOMAINS: Record<string, string> = {
+  dev: 'dev.gsv.dev',
+  qa: 'qa.digitlify.com',
+  prod: 'digitlify.com',
+};
+
+const BASE_DOMAIN = DOMAINS[ENV] || DOMAINS.dev;
+
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
@@ -19,7 +35,7 @@ export default defineConfig({
     ['list'],
   ],
   use: {
-    baseURL: process.env.E2E_BASE_URL || 'https://dev.gsv.dev',
+    baseURL: process.env.E2E_BASE_URL || `https://${BASE_DOMAIN}`,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'on-first-retry',

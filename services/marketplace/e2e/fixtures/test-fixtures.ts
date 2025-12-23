@@ -1,59 +1,82 @@
 import { test as base, expect } from "@playwright/test";
 
+/**
+ * Environment-based configuration for E2E tests
+ *
+ * Environments:
+ * - dev: dev.gsv.dev (GSVDEV development)
+ * - qa: qa.digitlify.com (Digitlify QA)
+ * - prod: digitlify.com (Digitlify Production)
+ *
+ * Set E2E_ENV=qa or E2E_ENV=prod to switch environments
+ * Or set individual E2E_* variables to override specific URLs
+ */
+
+const ENV = process.env.E2E_ENV || "dev";
+
+// Domain mapping per environment
+const DOMAINS: Record<string, string> = {
+  dev: "dev.gsv.dev",
+  qa: "qa.digitlify.com",
+  prod: "digitlify.com",
+};
+
+const BASE_DOMAIN = DOMAINS[ENV] || DOMAINS.dev;
+
 export const TEST_ACCOUNTS = {
   buyer: {
-    email: "buyer@test.gsv.dev",
-    password: "Test123!",
+    email: process.env.E2E_BUYER_EMAIL || `buyer@test.${BASE_DOMAIN}`,
+    password: process.env.E2E_BUYER_PASSWORD || "Test123!",
   },
   seller: {
-    email: "seller@test.gsv.dev",
-    password: "Test123!",
+    email: process.env.E2E_SELLER_EMAIL || `seller@test.${BASE_DOMAIN}`,
+    password: process.env.E2E_SELLER_PASSWORD || "Test123!",
   },
   admin: {
-    email: "admin@dev.gsv.dev",
-    password: "Admin123!",
+    email: process.env.E2E_ADMIN_EMAIL || `admin@${BASE_DOMAIN}`,
+    password: process.env.E2E_ADMIN_PASSWORD || "Admin123!",
   },
 };
 
 /**
  * Service URLs for E2E Testing
  *
- * FQDN Architecture (as of 2025-12-22):
- * - dev.gsv.dev: Main site + Marketplace (Next.js serving Saleor storefront)
- * - store.dev.gsv.dev: Saleor Commerce API (GraphQL backend)
- * - admin.dev.gsv.dev: Saleor Dashboard (admin UI)
- * - cp.dev.gsv.dev: Control Plane API (Django/DRF)
- * - api.dev.gsv.dev: Gateway API (FastAPI - execution entrypoint)
- * - sso.dev.gsv.dev: Keycloak SSO (OIDC provider)
- * - runtime.dev.gsv.dev: Langflow Runtime (agent execution)
- * - studio.dev.gsv.dev: Langflow Studio (flow builder IDE)
- * - rag.dev.gsv.dev: Ragflow (RAG backend)
+ * FQDN Architecture:
+ * - {domain}: Main site + Marketplace (Next.js serving Saleor storefront)
+ * - shop.{domain}: Saleor Commerce API (GraphQL backend)
+ * - admin.{domain}: Saleor Dashboard (admin UI)
+ * - cp.{domain}: Control Plane API (Django/DRF)
+ * - api.{domain}: Gateway API (FastAPI - execution entrypoint)
+ * - sso.{domain}: Keycloak SSO (OIDC provider)
+ * - runtime.{domain}: Langflow Runtime (agent execution)
+ * - studio.{domain}: Langflow Studio (flow builder IDE)
+ * - rag.{domain}: Ragflow (RAG backend)
  *
  * Note: CMS (Wagtail) is headless, content served via Next.js routes
  */
 export const URLS = {
   // Main site - Next.js serves both marketing pages and marketplace
-  site: process.env.E2E_BASE_URL || "https://dev.gsv.dev",
-  marketplace: process.env.E2E_BASE_URL || "https://dev.gsv.dev",
+  site: process.env.E2E_BASE_URL || `https://${BASE_DOMAIN}`,
+  marketplace: process.env.E2E_BASE_URL || `https://${BASE_DOMAIN}`,
 
   // Commerce (Saleor)
-  saleor: "https://store.dev.gsv.dev",
-  saleorGraphQL: "https://store.dev.gsv.dev/graphql/",
-  dashboard: "https://admin.dev.gsv.dev",
+  saleor: process.env.E2E_SALEOR_URL || `https://shop.${BASE_DOMAIN}`,
+  saleorGraphQL: process.env.E2E_SALEOR_GRAPHQL_URL || `https://shop.${BASE_DOMAIN}/graphql/`,
+  dashboard: process.env.E2E_DASHBOARD_URL || `https://admin.${BASE_DOMAIN}`,
 
   // Platform APIs
-  controlPlane: "https://cp.dev.gsv.dev",
-  gateway: "https://api.dev.gsv.dev",
+  controlPlane: process.env.E2E_CP_URL || `https://cp.${BASE_DOMAIN}`,
+  gateway: process.env.E2E_API_URL || `https://api.${BASE_DOMAIN}`,
 
   // Auth
-  keycloak: "https://sso.dev.gsv.dev",
+  keycloak: process.env.E2E_SSO_URL || `https://sso.${BASE_DOMAIN}`,
 
   // Execution
-  runtime: "https://runtime.dev.gsv.dev",
-  studio: "https://studio.dev.gsv.dev",
+  runtime: process.env.E2E_RUNTIME_URL || `https://runtime.${BASE_DOMAIN}`,
+  studio: process.env.E2E_STUDIO_URL || `https://studio.${BASE_DOMAIN}`,
 
   // RAG
-  rag: "https://rag.dev.gsv.dev",
+  rag: process.env.E2E_RAG_URL || `https://rag.${BASE_DOMAIN}`,
 };
 
 export const CATEGORIES = ["Agents", "Apps", "Assistants", "Automations"] as const;
