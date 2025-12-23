@@ -21,6 +21,13 @@ const stateColors: Record<string, string> = {
 // Configuration sections for the agent
 const configSections = [
   {
+  {
+    id: "channels",
+    title: "Channels",
+    description: "Widget, API, and integration options",
+    icon: "W",
+    href: "channels",
+  },
     id: "api-keys",
     title: "API Keys",
     description: "Manage API keys for programmatic access",
@@ -42,11 +49,11 @@ const configSections = [
     href: "connectors",
   },
   {
-    id: "configuration",
-    title: "Configuration",
-    description: "Customize agent behavior with overrides",
-    icon: "S",
-    href: "configuration",
+    id: "branding",
+    title: "Branding",
+    description: "Customize appearance and messaging",
+    icon: "B",
+    href: "branding",
   },
   {
     id: "usage",
@@ -56,11 +63,6 @@ const configSections = [
     href: "usage",
   },
   {
-    id: "logs",
-    title: "Logs",
-    description: "View agent activity and conversation logs",
-    icon: "L",
-    href: "logs",
   },
 ];
 
